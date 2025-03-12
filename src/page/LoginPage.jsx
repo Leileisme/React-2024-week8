@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { setIsLogin } from "../slice/stateReducer"
-import { showDangerToast,showSuccessToast } from "../utils/toastUtils"
+import { showDangerToast, showSuccessToast, showErrorToast } from "../utils/toastUtils"
 import { ToastContainer } from 'react-toastify'
 
 const api = import.meta.env.VITE_BASE_URL
@@ -30,14 +30,17 @@ const Login = () => {
       const res = await axios.post(
         `${api}/v2/admin/signin`, user)
       const {token,expired} = res.data
-      document.cookie = `token=${token};expires=${new Date(expired)} `
-      axios.defaults.headers.common.Authorization = token
+      // document.cookie = `token=${token};expires=${new Date(expired)} `
+      document.cookie = `token=${token}; expires=${new Date(expired).toUTCString()}; path=/`
+
+      // axios.defaults.headers.common.Authorization = token
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
       dispatch(setIsLogin(true))
       showSuccessToast('登入成功')
       navigate('/admin')
     } catch (error) {
       // console.log(error)
-      showDangerToast(error?.response?.data?.message)
+      showErrorToast(error?.response?.data?.message)
       
     }
   }

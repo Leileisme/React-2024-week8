@@ -264,7 +264,7 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
                       <div className="col-12 mb-3">
                         <label htmlFor="tags" className='form-label me-2'>標籤</label>
                         {
-                          product.tags.map((tag,i)=>{
+                          product?.tags?.map((tag,i)=>{
                             return (<span key={i} className="badge text-bg-primary ms-1 ">{tag}
                               <button
                                 type="button"

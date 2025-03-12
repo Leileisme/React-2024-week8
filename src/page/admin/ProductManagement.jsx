@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router"
 import { useEffect, useState, useRef } from "react"
-import { setIsLogin } from "../../slice/stateReducer"
 import { useDispatch, useSelector } from "react-redux"
 import { showSuccessToast,showDangerToast, showErrorToast } from '../../utils/toastUtils'
+import { checkLogin, getTokenFromCookies } from "../../utils/authUtils"
 
 import ProductList from '../../component/AdminProductList'
-import ProductModal from '../../component/AdminProductModal';
+import ProductModal from '../../component/AdminProductModal'
 import Pagination from '../../component/AdminPagination' 
 
 import axios from "axios"
@@ -15,10 +15,24 @@ const api = import.meta.env.VITE_BASE_URL
 const path = import.meta.env.VITE_API_PATH
 
 const ProductManagement = () => {
+  const dispatch = useDispatch() // 使用 set 的方法
+  const navigate = useNavigate()
 
-  // const isLogin = useSelector((state)=> state.state.isLogin)
-  // const dispatch = useDispatch()
-  // const navigate = useNavigate()
+  //  驗證登入
+  useEffect(() => {
+    const token = getTokenFromCookies()
+
+    if (token) {
+      axios.defaults.headers.common.Authorization = token
+      checkLogin(dispatch).catch(() => { // 抓住 authUtils.jsx 拋出的錯誤
+        navigate("/login") 
+      })
+    } else {
+      showDangerToast("Token not found")
+      navigate("/login")
+    }
+  }, [dispatch, navigate])
+
 
   const [product,setProduct] = useState({
     id: "",
@@ -32,9 +46,9 @@ const ProductManagement = () => {
     content: "",
     is_enabled: 0,
     imagesUrl: [],
-    tags:[],
+    tags: [],
     stockQty: 0
-  })
+  })// 單一產品
   const [products,setProducts] = useState([])   // 產品列表
   const [isEdit, setIsEdit] = useState(false)   // 是否編輯
   const [pagination, setPagination] = useState({}) // 分頁資訊
@@ -126,10 +140,11 @@ const ProductManagement = () => {
 
   return(
     <>
-          <div className="container mt-3">
+      <div className="mb-3">
         <div className='d-flex justify-content-between mb-3'>
           <h1 className='h4'>產品管理</h1>
           <button type='button' className='btn btn-primary' onClick={openAddModal}>新增產品</button>
+          
           <ProductModal 
             addModalRef={addModalRef}
             addModal={addModal}

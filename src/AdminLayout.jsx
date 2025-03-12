@@ -1,20 +1,17 @@
 import axios from "axios"
 import { useDispatch } from "react-redux"
-import { Link, Outlet, useLocation, useNavigate } from "react-router"
+import { Link, Outlet, useNavigate } from "react-router"
 import { NavLink } from "react-router"
 import { ToastContainer } from 'react-toastify'
 import { setIsLogin } from "./slice/stateReducer"
 import { showDangerToast, showErrorToast, showSuccessToast } from "./utils/toastUtils"
-import { useEffect } from "react"
 
 
 
 const api = import.meta.env.VITE_BASE_URL
-const path = import.meta.env.VITE_API_PATH
 
 const AdminLayout = () => { 
   const navigate = useNavigate()
-  const location = useLocation()
   const routes = [
     {
       path:'/admin/product',
@@ -29,55 +26,8 @@ const AdminLayout = () => {
       name:'優惠券管理'
     }
   ]
-
-  async function checkLogin(){
-    try {
-      await axios.post(`${api}/v2/api/user/check`)
-      dispatch(setIsLogin(true))
-    } catch (error) {
-      // console.log(error)
-      navigate('/login')
-    }
-  }
-
-  useEffect(()=>{
-    const token = document.cookie.replace(
-      /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
-
-    if (token) {
-      axios.defaults.headers.common.Authorization = token;
-      checkLogin()
-    } else {
-      // console.log('Token not found);
-      showDangerToast('Token not found')
-      navigate('/login')
-    }
-
-  },[location.pathname])
-
   const dispatch = useDispatch()
 
-  // 登出
-  // function handleLogout(){
-  //   try {
-  //     // 設定 Cookie 過期來刪除 token
-  //     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-  //     // 移除 Axios 預設的授權標頭
-  //     delete axios.defaults.headers.common.Authorization
-  //     // 更新 Redux 登入狀態（如果有使用 Redux）
-  //     dispatch(setIsLogin(false))
-  //     showSuccessToast('登出成功')
-
-  //     setTimeout(()=>{
-  //       navigate('/')
-  //     },1000)
-  //   } catch (error) {
-  //     showDangerToast('登出失敗')
-  //   }
-    
-  // }
   async function handleLogout() {
     try {
       // 調用 API 進行登出
@@ -127,7 +77,7 @@ const AdminLayout = () => {
     </nav>
   </header>
   
-  <div className="m-3">
+  <div className="m-3 mt-0">
     <Outlet />
   </div>
 

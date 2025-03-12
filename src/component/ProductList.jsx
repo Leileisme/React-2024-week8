@@ -1,18 +1,122 @@
 import { useNavigate } from "react-router"
+import { useDispatch, useSelector } from 'react-redux'
+import { showDangerToast,showErrorToast,showSuccessToast } from "../utils/toastUtils"
+import { useEffect, useState } from "react"
+import { setCartQty,setCart,setCartItemsQty } from "../slice/cartReducer"
+import axios from "axios"
+
+const api = import.meta.env.VITE_BASE_URL
+const path = import.meta.env.VITE_API_PATH
 
 const ProductList = (props) =>{
-const {
-  productsList,
-  handleClickProductModal,
-  handleAddCartItem
-} = props
-const navigate = useNavigate()
+  const cart = useSelector(state=> state.cart.cart)
+  const productDetail = useSelector(state=> state.cart.productDetail)
+  const cartQty = useSelector(state=> state.cart.cartQty)
+  const cartItemsQty = useSelector(state=> state.cart.cartItemsQty)
+  const [isLoading,setIsLoading] = useState(false)
 
-// 前往產品細節
-function handleClickProduct (id){
-  navigate(`/product/${id}`)
-}
+  const dispatch = useDispatch()
+  const {
+    productsList
+  } = props
+  const navigate = useNavigate()
 
+  // 進入產品詳情
+  const handleClickProduct = (productId) => {
+    // 使用 navigate 進行路由跳轉
+    navigate(`/product/${productId}`)
+  }
+
+  // 加入購物車
+  async function addCartItem(product_id,qty) {
+    setIsLoading(true)
+    try {
+      await axios.post(`${api}/v2/api/${path}/cart`, {
+        data:{
+          product_id,
+          qty
+        }
+      })
+      getCart()
+      showSuccessToast('成功加入購物車')
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // 編輯購物車 單獨產品數量
+  async function editCartItem(cart_id,product_id,qty) {
+    setIsLoading(true)
+    try {
+      await axios.put(`${api}/v2/api/${path}/cart/${cart_id}`,{data:{
+        product_id,
+        qty
+      }})
+      
+      getCart()
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+      setIsLoading(false)
+
+    }
+  }
+
+
+  // 取得購物車列表
+  async function getCart() {
+    setIsLoading(true)
+    try {
+      const res = await axios.get(`${api}/v2/api/${path}/cart`)
+      dispatch(setCart(res.data.data))
+      const _cart = res.data.data.carts.map((item)=>{
+        if(item.qty > item.product.stockQty){
+          showDangerToast(`商品${item.product.title}庫存不足，最多只能購買${item.product.stockQty}個`)
+          item.qty = item.product.stockQty
+          editCartItem(item.id,item.product_id,item.product.stockQty)
+        }
+        return item
+      })
+      
+      dispatch(
+        setCartItemsQty(
+          _cart.map(cart=>({
+            id: cart.product_id,
+            qty:cart.qty
+          }))
+        )
+      )
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // 監聽 產品詳情中 加入購物車
+  function handleAddCartItem(product_id,isDetail) {
+    const _currentCart = cartItemsQty.filter(item => item.id === product_id)  
+    if(_currentCart.length === 0) {
+      addCartItem(product_id,Number(cartQty))
+    } else {
+      const _currentCartQty = _currentCart ? _currentCart[0].qty : 0
+      const _maxQty = productDetail.stockQty
+
+      let _purchaseQty = isDetail ? Number(cartQty) : 1
+      const totalQty = _currentCartQty + _purchaseQty
+
+      if(totalQty > _maxQty){
+        _purchaseQty = _maxQty - _currentCartQty
+        showDangerToast(`商品${productDetail.title}庫存不足，最多只能購買${_maxQty}個`)
+      }
+
+      if(_purchaseQty > 0){
+        addCartItem(product_id,_purchaseQty)
+      }
+    }
+    dispatch(setCartQty(1))
+  }
 return(
 <>
   <table className="table">

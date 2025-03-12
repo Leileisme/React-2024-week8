@@ -3,7 +3,7 @@ import { showSuccessToast , showDangerToast } from '../utils/toastUtils'
 // 產品列表
 const ProductList = ({ products, openEditModal, handleDelete, isSubmittingDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)  // 控制 Modal 顯示
-  const [modalOpenProduct, setModalOpenProduct] = useState({})
+  const [modalOpenProduct, setModalOpenProduct] = useState({}) // 待確認要刪除的id
 
   // 開啟刪除確認 modal
   const openModal = (item) => {
@@ -16,8 +16,8 @@ const ProductList = ({ products, openEditModal, handleDelete, isSubmittingDelete
 
     // 關閉刪除確認 modal
     const closeModal = () => {
-      setModalOpenProduct({})  // 關閉所有的 Modal
-      setIsModalOpen(false)
+      setModalOpenProduct({}) 
+      setIsModalOpen(false) // 關閉所有的 Modal
     }
 
   return(

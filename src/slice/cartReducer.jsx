@@ -27,6 +27,7 @@ export const getCart = createAsyncThunk('cart/getCart', async (_, { dispatch }) 
         id: cart.product_id,
         qty: cart.qty,
       })),
+      
     };
   } catch (error) {
     showErrorToast(error?.response?.data?.message);
@@ -53,15 +54,47 @@ export const addCartItem = createAsyncThunk(
   'cart/addCartItem',
   async ({ productId, qty }, { rejectWithValue }) => {
     try {
-      await axios.post(`${BASE_URL}/v2/api/${PATH}/cart`, { product_id: productId, qty });
-      return { productId, qty };
+      await axios.post(`${BASE_URL}/v2/api/${PATH}/cart`, {
+        data: { product_id: productId, qty }
+      })
+      return { productId, qty }
     } catch (error) {
-      showErrorToast(error?.response?.data?.message);
+      showErrorToast(error?.response?.data?.message)
+      console.log(error)
+      
+      return rejectWithValue(error?.response?.data?.message)
+    }
+  }
+)
+
+
+export const handleAddCartItem = createAsyncThunk(
+  'cart/handleAddCartItem',
+  async ({ productId, isDetail, productDetail}, { getState, dispatch, rejectWithValue }) => {
+    try {
+      const state = getState().cart;
+      const existingItem = state.cartItemsQty.find((item) => item.id === productId);
+      const currentQty = existingItem ? existingItem.qty : 0;
+      const maxQty = productDetail.stockQty;
+
+      let purchaseQty = isDetail ? Number(cartQty) : 1;
+      const totalQty = currentQty + purchaseQty;
+
+      if (totalQty > maxQty) {
+        purchaseQty = maxQty - currentQty;
+        showDangerToast(`商品 ${productDetail.title} 庫存不足，最多只能購買 ${maxQty} 個`);
+      }
+
+      if (purchaseQty > 0) {
+        await dispatch(addCartItem({ productId, qty: purchaseQty }));
+      }
+
+      return { productId, purchaseQty };
+    } catch (error) {
       return rejectWithValue(error?.response?.data?.message);
     }
   }
-);
-
+)
 
 
 // 設定產品詳情
@@ -83,10 +116,19 @@ const cartSlice = createSlice({
   reducers: {
     // 設定單一商品數量
     setCartQty: (state, action) => {
-      state.cartQty = action.payload;
+      state.cartQty = action.payload
     },
-    setIsLoading:(state, action) => {
-      state.isLoading = action.payload;
+    isLoading:(state, action) => {
+      state.isLoading = action.payload
+    },
+    setCart : (state, action) => {
+      state.cart = action.payload
+    },
+    setCartItemsQty:(state, action) => {
+      state.cartItemsQty = action.payload
+    },
+    setIsLoading: (state, action) => {
+      state.isLoading = action.payload
     },
 
     // 處理輸入數量變化（即時更新）
@@ -131,29 +173,29 @@ const cartSlice = createSlice({
     },
 
     // 加入購物車
-    handleAddCartItem: (state, action) => {
-      const { productId, isDetail, productDetail, dispatch } = action.payload;
+    // handleAddCartItem: (state, action) => {
+    //   const { productId, isDetail, productDetail, dispatch } = action.payload
 
-      const existingItem = state.cartItemsQty.find((item) => item.id === productId);
-      const currentQty = existingItem ? existingItem.qty : 0;
-      const maxQty = productDetail.stockQty;
+    //   const existingItem = state.cartItemsQty.find((item) => item.id === productId)
+    //   const currentQty = existingItem ? existingItem.qty : 0
+    //   const maxQty = productDetail.stockQty;
 
-      let purchaseQty = isDetail ? Number(state.cartQty) : 1;
-      const totalQty = currentQty + purchaseQty;
+    //   let purchaseQty = isDetail ? Number(state.cartQty) : 1
+    //   const totalQty = currentQty + purchaseQty;
 
-      if (totalQty > maxQty) {
-        purchaseQty = maxQty - currentQty;
-        showDangerToast(`商品 ${productDetail.title} 庫存不足，最多只能購買 ${maxQty} 個`);
-      }
+    //   if (totalQty > maxQty) {
+    //     purchaseQty = maxQty - currentQty;
+    //     showDangerToast(`商品 ${productDetail.title} 庫存不足，最多只能購買 ${maxQty} 個`);
+    //   }
 
-      if (purchaseQty > 0) {
-        dispatch(addCartItem({ productId, qty: purchaseQty }));
-      }
+    //   if (purchaseQty > 0) {
+    //     dispatch(addCartItem({ productId, qty: purchaseQty }));
+    //   }
 
-      if (isDetail) {
-        state.cartQty = 1;
-      }
-    },
+    //   if (isDetail) {
+    //     state.cartQty = 1;
+    //   }
+    // },
   },
   extraReducers: (builder) => {
     builder
@@ -185,16 +227,28 @@ const cartSlice = createSlice({
       })
       .addCase(setProductDetail.fulfilled, (state, action) => {
         state.productDetail = action.payload;
+      })
+      .addCase(handleAddCartItem.fulfilled, (state, action) => {
+        const { productId, purchaseQty } = action.payload;
+        const existingItem = state.cartItemsQty.find((item) => item.id === productId);
+        if (existingItem) {
+          existingItem.qty += purchaseQty;
+        } else {
+          state.cartItemsQty.push({ id: productId, qty: purchaseQty });
+        }
       });
   },
 });
 
 export const {
   setCartQty,
+  setCart,
+  cartItemsQty,
+  setCartItemsQty,
   setIsLoading,
   handleCartQtyInputOnChange,
   handleCartQtyInputOnBlur,
-  handleAddCartItem,
+  // handleAddCartItem,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router"
 import { showSuccessToast,showDangerToast,showErrorToast } from '../../utils/toastUtils'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getCart, editCartItem, addCartItem, setCartQty } from '../../slice/cartReducer';
+import { getCart, editCartItem, addCartItem, setCartQty,handleAddCartItem } from '../../slice/cartReducer';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
 const PATH = import.meta.env.VITE_API_PATH
@@ -52,9 +52,9 @@ const ProductDetail = (props) => {
   };
   
   // 新增商品到購物車
-  const handleAddCartItem = (productId, qty) => {
-    dispatch(addCartItem({ productId, qty }));
-  };
+  // const handleAddCartItem = (productId, qty) => {
+  //   dispatch(addCartItem({ productId, qty }));
+  // };
   
   // 初始化時獲取購物車數據
   useEffect(() => {
@@ -176,7 +176,7 @@ const ProductDetail = (props) => {
                 <button
                   type="button"
                   className="btn btn-sm btn-primary w-100"
-                  onClick={()=>handleAddCartItem(productDetail.id,true) }>
+                  onClick={()=>handleAddToCart(productDetail.id,true) }>
                   加入購物車
                 </button>
               </div>
