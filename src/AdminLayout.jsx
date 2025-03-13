@@ -5,12 +5,17 @@ import { NavLink } from "react-router"
 import { ToastContainer } from 'react-toastify'
 import { setIsLogin } from "./slice/stateReducer"
 import { showDangerToast, showErrorToast, showSuccessToast } from "./utils/toastUtils"
+import ReactLoading from 'react-loading'
+import { useSelector } from "react-redux"
+
 
 
 
 const api = import.meta.env.VITE_BASE_URL
 
 const AdminLayout = () => { 
+  const isLoading = useSelector((state) => state.cart.isLoading)
+
   const navigate = useNavigate()
   const routes = [
     {
@@ -82,6 +87,14 @@ const AdminLayout = () => {
   </div>
 
   <ToastContainer />
+
+
+    {
+      isLoading &&
+      <div className="loading-contain d-flex justify-content-center align-items-center">
+        <ReactLoading type={'cylon'} color={'#0d6efd'} height={120} width={100} />
+      </div>
+    }
   </>)
 }
 

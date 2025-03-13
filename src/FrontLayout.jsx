@@ -1,10 +1,18 @@
 import { Outlet } from "react-router"
 import { NavLink } from "react-router"
 import { ToastContainer } from 'react-toastify'
+import ReactLoading from 'react-loading'
+import { useSelector } from "react-redux"
+import { useEffect } from "react"
+
 
 
 
 const FrontLayout = () => {
+  const isLoading = useSelector((state) => state.cart.isLoading)
+  useEffect(()=>{
+    console.log(isLoading)
+  })
   const routes = [
     {
       path:'/',
@@ -56,6 +64,13 @@ const FrontLayout = () => {
 
 
   <ToastContainer />
+
+  {
+      isLoading &&
+      <div className="loading-contain d-flex justify-content-center align-items-center">
+        <ReactLoading type={'cylon'} color={'#0d6efd'} height={120} width={100} />
+      </div>
+    }
   </>)
 }
 

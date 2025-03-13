@@ -1,93 +1,188 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router"
+import { Link, useNavigate, useParams } from "react-router"
 import { showSuccessToast,showDangerToast,showErrorToast } from '../../utils/toastUtils'
 
-import { useDispatch, useSelector } from 'react-redux';
-import { getCart, editCartItem, addCartItem, setCartQty,handleAddCartItem } from '../../slice/cartReducer';
+import { useDispatch, useSelector } from 'react-redux'
+import { setCartQty, setIsLoading, setCart, setCartItemsQty } from '../../slice/cartReducer'
 
-const BASE_URL = import.meta.env.VITE_BASE_URL
-const PATH = import.meta.env.VITE_API_PATH
+const api = import.meta.env.VITE_BASE_URL
+const path = import.meta.env.VITE_API_PATH
 
-const ProductDetail = (props) => {
-  const dispatch = useDispatch();
-  const { cart, cartQty, cartItemsQty, isLoading } = useSelector((state) => state.cart)
-
+const ProductDetail = () => {
+  const dispatch = useDispatch()
+  const { cartQty, cartItemsQty } = useSelector((state) => state.cart)
   const [productDetail,setProductDetail] = useState({})
 
- 
+
   // 取得購物車
   useEffect(() => {
-    dispatch(getCart());
-  }, [dispatch]);
-  
-  // 設定產品詳情
-  // const handleSetProductDetail = (product) => {
-  //   dispatch(setProductDetail(product));
-  // };
-  
-  // 設定購物數量
-  const handleSetCartQty = (qty) => {
-    dispatch(setCartQty(qty));
-  };
-  
-  // 減少購物車商品數量
-  const handleReduceCartQty = (cart) => {
-    const itemQty = cartItemsQty.find((item) => item.id === cart.product_id)?.qty || 1;
-    if (itemQty - 1 <= 0) {
-      showDangerToast('最低數量是 1 喔！');
-    } else {
-      dispatch(editCartItem({ cartId: cart.id, productId: cart.product_id, qty: itemQty - 1 }));
-    }
-  };
-  
-  // 增加購物車商品數量
-  const handleAddCartQty = (cart) => {
-    const itemQty = cartItemsQty.find((item) => item.id === cart.product_id)?.qty || 1;
-    if (itemQty + 1 > cart.product.stockQty) {
-      showDangerToast(`庫存只剩 ${cart.product.stockQty} 喔！`);
-    } else {
-      dispatch(editCartItem({ cartId: cart.id, productId: cart.product_id, qty: itemQty + 1 }));
-    }
-  };
-  
-  // 新增商品到購物車
-  // const handleAddCartItem = (productId, qty) => {
-  //   dispatch(addCartItem({ productId, qty }));
-  // };
-  
-  // 初始化時獲取購物車數據
-  useEffect(() => {
-    dispatch(getCart());
-  }, [dispatch]);
+    getCart()
+  }, [])
 
-  // 修改數量
-  const handleCartQtyInputOnChange = (e, cartId, formCart) => {
-    dispatch(handleCartQtyInputOnChange({ cartId, qty: e.target.value, formCart }));
-  };
+  // 減少商品數量 btn 
+  function handleReduceCartQty(cart,formCart){
+    if(formCart){
+      const _itemQty =  cartItemsQty.filter((item)=> item.id === cart.product_id)
+      if((_itemQty[0].qty - 1) <= 0){
+        showDangerToast('最低數量是1喔！')
+      }else{
+        editCartItem(cart.id, cart.product_id ,_itemQty[0].qty-1)
+      }
+    }else{
+      dispatch(setCartQty(Number(cartQty > 2 ? cartQty - 1 : 1)))
+      if((cartQty-1) <= 0 ){
+        showDangerToast('最低數量是1喔！')
+      }
+    }
+  }
 
-  // 失去焦點時驗證數量
-  const handleCartQtyInputOnBlur = (e, cart, formCart, productDetail) => {
-    dispatch(handleCartQtyInputOnBlur({ qty: e.target.value, cart, formCart, productDetail, dispatch }));
-  };
+  // 編輯購物車 單獨產品數量
+  async function editCartItem(cart_id,product_id,qty) {
+    dispatch(setIsLoading(true))
+    try {
+      await axios.put(`${api}/v2/api/${path}/cart/${cart_id}`,{data:{
+        product_id,
+        qty
+      }})
+      
+      getCart()
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+      dispatch(setIsLoading(false))
+
+    }
+  }
+
+  // 增加商品數量 btn 
+  function handleAddCartQty(cart,formCart,productDetail){
+    if(formCart){
+      const _itemQty =  cartItemsQty.filter((item)=> item.id === cart.product_id)
+      if((_itemQty[0].qty + 1) > cart.product.stockQty ){
+        showDangerToast(`庫存只剩${cart.product.stockQty}喔！`)
+      }else{
+        editCartItem(cart.id, cart.product_id ,_itemQty[0].qty+1)
+      }
+    }else{
+      dispatch(setCartQty(Number(cartQty < productDetail.stockQty ? cartQty + 1 : productDetail.stockQty)))
+      if((cartQty+1) > productDetail.stockQty ){
+        showDangerToast(`庫存只剩${productDetail.stockQty}喔！`)
+      }
+    }
+  }
+
+  // 取得購物車列表
+  async function getCart() {
+    dispatch(setIsLoading(true))
+    try {
+      const res = await axios.get(`${api}/v2/api/${path}/cart`)
+      dispatch(setCart(res.data.data))
+      const _cart = res.data.data.carts.map((item)=>{
+        if(item.qty > item.product.stockQty){
+          showDangerToast(`商品${item.product.title}庫存不足，最多只能購買${item.product.stockQty}個`)
+          item.qty = item.product.stockQty
+          editCartItem(item.id,item.product_id,item.product.stockQty)
+        }
+        return item
+      })
+
+      dispatch(
+        setCartItemsQty(
+          _cart.map(cart=>({
+            id: cart.product_id,
+            qty:cart.qty
+          }))
+        )
+      )
+
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+    } finally {
+      dispatch(setIsLoading(false))
+    }
+  }
+
+  // 監聽輸入數量
+  function handleCartQtyInputOnChange(e,cart,formCart){
+    const val = e.target.value
+
+    if(formCart){
+      dispatch(
+        setCartItemsQty ((pre)=>
+          pre.map((item) => item.id === cart.product_id ? {...item, qty: val} : item)
+        )
+      )
+    }else{
+      dispatch(setCartQty(val))
+    }
+  }
+
+  // 監聽 產品詳情中數量 去焦點時驗證數量
+  function handleCartQtyInputOnBlur(e,cart,formCart,productDetail) {
+    const val = Number(e.target.value)
+    if(isNaN(val) || val <1 ){
+      showDangerToast('只能輸入大於0的數字喔！')
+      formCart ? getCart() : dispatch(setCartQty(1))
+      return
+    }
+
+    const maxQty = formCart ? cart.product.stockQty : productDetail.stockQty
+
+    if(val > maxQty){
+      showDangerToast(`庫存只剩${maxQty}`)
+      formCart ? getCart() : dispatch(setCartQty(productDetail.stockQty))
+      return
+    }
+
+    if (formCart){
+      editCartItem(cart.id,cart.product_id,val)
+    } else {
+      dispatch(setCartQty(val))
+    }
+  }
+
+  // 監聽 產品詳情中 加入購物車
+  function handleAddCartItem(product_id,isDetail) {
+    const _currentCart = cartItemsQty.filter(item => item.id === product_id)  
+    if(_currentCart.length === 0) {
+      addCartItem(product_id,Number(cartQty))
+    } else {
+      const _currentCartQty = _currentCart ? _currentCart[0].qty : 0
+      const _maxQty = productDetail.stockQty
+
+      let _purchaseQty = isDetail ? Number(cartQty) : 1
+      const totalQty = _currentCartQty + _purchaseQty
+
+      if(totalQty > _maxQty){
+        _purchaseQty = _maxQty - _currentCartQty
+        showDangerToast(`商品${productDetail.title}庫存不足，最多只能購買${_maxQty}個`)
+      }
+
+      if(_purchaseQty > 0){
+        addCartItem(product_id,_purchaseQty)
+      }
+    }
+    dispatch(setCartQty(1))
+  }
 
   // 加入購物車
-  const handleAddToCart = (productId, isDetail, productDetail) => {
-    dispatch(handleAddCartItem({ productId, isDetail, productDetail, dispatch }));
-  };
-
-  // const {
-  //   productDetailRef,
-  //   productDetail,
-  //   setProductDetail,
-  //   handleReduceCartQty,
-  //   cartQty,
-  //   handleCartQtyInputOnChange,
-  //   handleCartQtyInputOnBlur,
-  //   handleAddCartQty,
-  //   handleAddCartItem
-  // } = props
-
+  async function addCartItem(product_id,qty) {
+    dispatch(setIsLoading(true))
+    try {
+      await axios.post(`${api}/v2/api/${path}/cart`, {
+        data:{
+          product_id,
+          qty
+        }
+      })
+      getCart()
+      showSuccessToast('成功加入購物車')
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+    } finally {
+      dispatch(setIsLoading(false))
+    }
+  }
 
   const {id} = useParams()
 
@@ -100,7 +195,7 @@ const ProductDetail = (props) => {
   // 取得單一產品
   async function getProductDetail(id) {
     try {
-      const res = await axios.get(`${BASE_URL}/v2/api/${PATH}/product/${id}`) 
+      const res = await axios.get(`${api}/v2/api/${path}/product/${id}`) 
       const product = res.data.product
       const imgsIsFalsy = product?.imagesUrl.every(img=> img === "")
       const imgsUrl =  [product.imageUrl,...(!imgsIsFalsy ? product.imagesUrl : [])]
@@ -111,13 +206,27 @@ const ProductDetail = (props) => {
 
     } catch (error) {
       console.log(error)
-      
     }
+
   }
   return(
     <>
       <div className="container">
-        <div className=" product-detail">
+      <nav aria-label="breadcrumb">
+      <ol className="breadcrumb">
+        <li className="breadcrumb-item">
+          <Link to="/">首頁</Link>
+        </li>
+        <li className="breadcrumb-item">
+          <Link to="/product">商城</Link>
+
+        </li>
+        <li className="breadcrumb-item active" aria-current="page">
+          {productDetail.title}
+        </li>
+      </ol>
+    </nav>
+        <div className="product-detail">
           <div className="modal-header">
             <h1 className="mb-3 h3" id="exampleModalLabel">{productDetail.title}</h1>
           </div>
@@ -176,7 +285,7 @@ const ProductDetail = (props) => {
                 <button
                   type="button"
                   className="btn btn-sm btn-primary w-100"
-                  onClick={()=>handleAddToCart(productDetail.id,true) }>
+                  onClick={()=>handleAddCartItem(productDetail.id,true) }>
                   加入購物車
                 </button>
               </div>
@@ -193,10 +302,3 @@ const ProductDetail = (props) => {
 )}
 
 export default ProductDetail
-// const ProductDetail = () =>{
-//   return(<>
-//   產品細節
-//   </>)
-// }
-
-// export default ProductDetail
