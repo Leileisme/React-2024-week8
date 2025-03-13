@@ -3,5 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base:process.env.NODE_ENV === 'production' ? '/React-2024-week8/' : '/',
   plugins: [react()],
 })
