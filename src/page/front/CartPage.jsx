@@ -15,8 +15,8 @@ const CartPage = () =>{
 
   const cartQty = useSelector(state=> state.cart.cartQty)
   const cartItemsQty = useSelector(state=> state.cart.cartItemsQty)
-  const [formCart,setFormCart] = useState(true) // 是否購物車表單
   const [toPay,setToPay] = useState(false) // 是否「去買單」
+  const formCart = true // 是否購物車表單
 
   useEffect(()=>{
     getCart()  
@@ -65,21 +65,13 @@ const CartPage = () =>{
       } catch (error) {
         showErrorToast(error?.response?.data?.message)
         dispatch(setIsLoading(false))
-  
       }
     }
   
 
-
   // 購物車 的 商品們數量
   function getCartItemsQty(product){
-    
-    // const currentItem = cartItemsQty.find(it=>it.id === product.product_id) 
-
-    const currentItem = Array.isArray(cartItemsQty)
-    ? cartItemsQty.find(it => it.id === product.product_id)
-    : null;
-    
+    const currentItem = Array.isArray(cartItemsQty) ? cartItemsQty.find(it => it.id === product.product_id) : null
     return currentItem ? currentItem.qty : 1
   }
 
@@ -179,7 +171,7 @@ const CartPage = () =>{
 
   const onSubmit = (data) => {
     const {message,...user} = data
-    postOrder(user,message)
+    postOrder(user, message)
   }
 
 

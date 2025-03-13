@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { Link, useNavigate, useParams } from "react-router"
+import { Link, useParams } from "react-router"
 import { showSuccessToast,showDangerToast,showErrorToast } from '../../utils/toastUtils'
 
 import { useDispatch, useSelector } from 'react-redux'
@@ -13,7 +13,6 @@ const ProductDetail = () => {
   const dispatch = useDispatch()
   const { cartQty, cartItemsQty } = useSelector((state) => state.cart)
   const [productDetail,setProductDetail] = useState({})
-
 
   // 取得購物車
   useEffect(() => {
@@ -94,7 +93,6 @@ const ProductDetail = () => {
           }))
         )
       )
-
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
     } finally {

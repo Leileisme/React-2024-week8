@@ -2,13 +2,13 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { showSuccessToast,showDangerToast,showErrorToast } from '../utils/toastUtils'
 
-const BASE_URL = import.meta.env.VITE_BASE_URL
-const PATH = import.meta.env.VITE_API_PATH
+const api = import.meta.env.VITE_BASE_URL
+const path = import.meta.env.VITE_API_PATH
 
 // 取得購物車列表
 export const getCart = createAsyncThunk('cart/getCart', async (_, { dispatch }) => {
   try {
-    const res = await axios.get(`${BASE_URL}/v2/api/${PATH}/cart`);
+    const res = await axios.get(`${api}/v2/api/${path}/cart`);
     const cartData = res.data.data;
 
     // 檢查庫存數量
@@ -40,7 +40,7 @@ export const editCartItem = createAsyncThunk(
   'cart/editCartItem',
   async ({ cartId, productId, qty }, { rejectWithValue }) => {
     try {
-      await axios.put(`${BASE_URL}/v2/api/${PATH}/cart/${cartId}`, { product_id: productId, qty });
+      await axios.put(`${api}/v2/api/${path}/cart/${cartId}`, { product_id: productId, qty });
       return { cartId, productId, qty };
     } catch (error) {
       showErrorToast(error?.response?.data?.message);
@@ -54,7 +54,7 @@ export const addCartItem = createAsyncThunk(
   'cart/addCartItem',
   async ({ productId, qty }, { rejectWithValue }) => {
     try {
-      await axios.post(`${BASE_URL}/v2/api/${PATH}/cart`, {
+      await axios.post(`${api}/v2/api/${path}/cart`, {
         data: { product_id: productId, qty }
       })
       return { productId, qty }

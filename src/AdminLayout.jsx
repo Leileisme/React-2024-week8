@@ -35,19 +35,11 @@ const AdminLayout = () => {
 
   async function handleLogout() {
     try {
-      // 調用 API 進行登出
       await axios.post(`${api}/v2/logout`)
-
-      // 移除 Axios 預設的授權標頭
       delete axios.defaults.headers.common.Authorization
-
-      // 更新 Redux 狀態
       dispatch(setIsLogin(false))
-
-      // 顯示成功訊息
       showSuccessToast('登出成功')
 
-      // 1 秒後跳轉到首頁
       setTimeout(() => {
         navigate('/')
       }, 1000)

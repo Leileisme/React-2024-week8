@@ -1,27 +1,23 @@
 import axios from "axios"
 import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router"
 import { setIsLogin } from "../slice/stateReducer"
-import { showDangerToast, showSuccessToast, showErrorToast } from "../utils/toastUtils"
+import { showSuccessToast, showErrorToast } from "../utils/toastUtils"
 import { ToastContainer } from 'react-toastify'
 
 const api = import.meta.env.VITE_BASE_URL
 
 // 登入
 const Login = () => {
-  //  state.state.isLogin 
-  //  全局的 store、stateSlice 定義的 initialState內容
-  // const isLogin = useSelector((state)=> state.state.isLogin)
   const dispatch = useDispatch()
-
+  const navigate = useNavigate()
 
   const [user, setUser] = useState({
     username:'',
     password:''
   })
 
-  const navigate = useNavigate()
   
   // 登入 API
   async function handleLogin(e){
@@ -45,8 +41,6 @@ const Login = () => {
     }
   }
 
-  
-
   // 監聽 input
   function handleInputChange(e){
     const {name,value} = e.target
@@ -56,6 +50,7 @@ const Login = () => {
     })
   }
 
+  // 返回首頁
   function handleBack(){
     navigate('/')
   }

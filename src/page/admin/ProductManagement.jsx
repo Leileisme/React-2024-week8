@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router"
 import { useEffect, useState, useRef } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { showSuccessToast,showDangerToast, showErrorToast } from '../../utils/toastUtils'
 import { checkLogin, getTokenFromCookies } from "../../utils/authUtils"
+import { setIsLoading } from "../../slice/cartReducer"
 
 import ProductList from '../../component/AdminProductList'
 import ProductModal from '../../component/AdminProductModal'
-import Pagination from '../../component/AdminPagination' 
-
+import Pagination from "../../component/Pagination"
 import axios from "axios"
 import * as bootstrap from "bootstrap"
 
@@ -53,11 +53,8 @@ const ProductManagement = () => {
   const [isEdit, setIsEdit] = useState(false)   // 是否編輯
   const [pagination, setPagination] = useState({}) // 分頁資訊
   const [isSubmittingDelete, setIsSubmittingDelete] = useState(false)
-
-
   const addModalRef = useRef(null)
   const addModal = useRef(null)
-
 
   useEffect(()=>{
     getProducts()
@@ -65,6 +62,7 @@ const ProductManagement = () => {
 
   // 取得產品資訊
   async function getProducts(e,page=1) {
+    dispatch(setIsLoading(true))
     if(e){
       e.preventDefault()
     }
@@ -73,8 +71,9 @@ const ProductManagement = () => {
       setProducts(res.data.products)
       setPagination(res.data.pagination)     
     } catch (error) {
-      // console.log(error)
-      showErrorToast('取得產品錯誤')
+      showErrorToast(error.response?.data?.message)
+    } finally {
+      dispatch(setIsLoading(false))
     }
   }
 
@@ -103,6 +102,7 @@ const ProductManagement = () => {
   // 產品新增跳窗
   const openAddModal = () =>{
     setIsEdit(false)
+    dispatch(setIsLoading(true))
     setProduct({
       id: "",
       imageUrl: "",
@@ -120,10 +120,12 @@ const ProductManagement = () => {
     })
     addModal.current = new bootstrap.Modal(addModalRef.current)
     addModal.current.show()
+    dispatch(setIsLoading(false))
   }
 
   // 刪除產品
   async function handleDelete (id,e){
+    dispatch(setIsLoading(true))
     if(isSubmittingDelete) return
     setIsSubmittingDelete(true)
     try {
@@ -133,10 +135,11 @@ const ProductManagement = () => {
       showSuccessToast('刪除成功')
       setIsSubmittingDelete(false)
     } catch (error) {
-      showDangerToast('刪除失敗')
+      showDangerToast(error?.response?.error?.message)
+    } finally {
+      dispatch(setIsLoading(false))
     }
   }
-
 
   return(
     <>
@@ -168,7 +171,7 @@ const ProductManagement = () => {
         isSubmittingDelete={isSubmittingDelete}
         setIsSubmittingDelete={setIsSubmittingDelete} />
 
-        <Pagination pagination={pagination} getProducts={getProducts} />
+        <Pagination pagination={pagination} getProducts={getProducts} type={'getProducts'} />
       </div>
 
     </>

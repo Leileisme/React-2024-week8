@@ -1,42 +1,28 @@
-import { useEffect, useRef, useState } from 'react'
-import { Modal,Offcanvas}  from 'bootstrap'
-import { showSuccessToast,showDangerToast,showErrorToast } from '../../utils/toastUtils'
+import { useEffect, useState } from 'react'
+import { showSuccessToast, showErrorToast } from '../../utils/toastUtils'
 import Pagination from '../../component/Pagination'
 import ProductList from '../../component/ProductList'
 import ProductCard from '../../component/ProductCard'
 import ProductModalDetail from '../../component/ProductModalDetail'
 import axios from 'axios'
 import { getCart, setIsLoading } from '../../slice/cartReducer'
-import { useDispatch, useSelector } from 'react-redux' 
+import { useDispatch, } from 'react-redux' 
 
 
-const BASE_URL = import.meta.env.VITE_BASE_URL
-const PATH = import.meta.env.VITE_API_PATH
-
-
+const api = import.meta.env.VITE_BASE_URL
+const path = import.meta.env.VITE_API_PATH
 
 const ProductPage = () => {
   const [productsList,setProductsList]=useState([]) // 產品列表
   const [pagination,setPagination] = useState({}) // 產品列表分頁資訊
   const [isList, setIsList] = useState(true) // 判斷產品List/Card
-  // const [cart,setCart] = useState({}) // 購物車
-  // const [productDetail,setProductDetail] = useState({})
-  // const [cartQty,setCartQty] = useState(1) // 加入購物車 單獨商品
-  // const [cartItemsQty,setCartItemsQty] = useState([{
-  //   id:'',
-  //   qty:1
-  // }]) // 加入購物車 多獨商品
-
   const productCategory = ['所有商品','經典眼鏡','太陽眼鏡','細框眼鏡','兒童眼鏡','配件']
-
   const dispatch = useDispatch()
-  const { cart, productDetail, cartQty, cartItemsQty, isLoading } = useSelector((state) => state.cart)
 
   // 新增商品到購物車
   const handleAddCartItem = (productId, qty) => {
-    dispatch(addCartItem({ productId, qty }));
+    dispatch(addCartItem({ productId, qty }))
   }
-
 
   // 取的產品列表
   async function getProductsList(page = 1,category=null) {
@@ -45,8 +31,8 @@ const ProductPage = () => {
     try {
       const res = await axios.get(
         category 
-        ? `${BASE_URL}/v2/api/${PATH}/products?page=${page}&category=${category}` 
-        : `${BASE_URL}/v2/api/${PATH}/products?page=${page}`
+        ? `${api}/v2/api/${path}/products?page=${page}&category=${category}` 
+        : `${api}/v2/api/${path}/products?page=${page}`
       )
       setProductsList(res.data.products)
       setPagination(res.data.pagination)
@@ -61,10 +47,9 @@ const ProductPage = () => {
 
   // 加入購物車
   async function addCartItem(product_id,qty) {
-    // setIsLoading(true)
     dispatch(setIsLoading(true))
     try {
-      await axios.post(`${BASE_URL}/v2/api/${PATH}/cart`, {
+      await axios.post(`${api}/v2/api/${path}/cart`, {
         data:{
           product_id,
           qty
@@ -75,7 +60,6 @@ const ProductPage = () => {
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
     } finally {
-      // setIsLoading(false)
       dispatch(setIsLoading(false))
 
     }
@@ -102,7 +86,6 @@ const ProductPage = () => {
       getProductsList(1,category)
     }
   }
-
 
   return(<>
     <div className="row">
@@ -162,20 +145,10 @@ const ProductPage = () => {
             getProductsList={getProductsList}
           />
         }
-        {/* <ProductModalDetail
-          productDetailRef={productDetailRef}
-          productDetail={productDetail}
-          setProductDetail={setProductDetail}
-          handleReduceCartQty={handleReduceCartQty}
-          cartQty={cartQty}
-          handleCartQtyInputOnChange={handleCartQtyInputOnChange}
-          handleCartQtyInputOnBlur={handleCartQtyInputOnBlur}
-          handleAddCartQty={handleAddCartQty}
-          handleAddCartItem={handleAddCartItem}
-        /> */}
         <Pagination
           pagination={pagination}
           handlePageClick={handlePageClick}
+          type={'handlePageClick'}
         />
       </div>
     </div>

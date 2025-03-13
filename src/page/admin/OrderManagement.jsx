@@ -2,8 +2,9 @@ import { useNavigate } from "react-router"
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from "react-redux"
 import { showSuccessToast , showDangerToast, showErrorToast } from '../../utils/toastUtils' 
-import Pagination from '../../component/AdminPagination' 
 import { checkLogin, getTokenFromCookies } from "../../utils/authUtils"
+import { setIsLoading } from "../../slice/cartReducer"
+import Pagination from "../../component/Pagination"
 
 import axios from "axios"
 import * as bootstrap from "bootstrap"
@@ -21,9 +22,6 @@ const OrderManagement = () => {
   const isConfirmModal = useRef(null) // 詳情 Modal
   const [modalDeleteOrder, setModalDeleteOrder] = useState({}) // 待確認要刪除的id
   const [modalPaymentState, setModalPaymentState] = useState({}) // 待確認要刪除的id
-
-  
-  
 
   const dispatch = useDispatch() // 使用 set 的方法
   const navigate = useNavigate()
@@ -49,6 +47,7 @@ const OrderManagement = () => {
 
   // 取得訂單資訊
   async function getOrders(e,page=1) {
+    dispatch(setIsLoading(true))
     if(e){
       e.preventDefault()
     }
@@ -56,16 +55,17 @@ const OrderManagement = () => {
       const res =  await axios.get(`${api}/v2/api/${path}/admin/orders?page=${page}`)
       setOrders(res.data.orders)
       setPagination(res.data.pagination)
-      console.log(res);
-      
     } catch (error) {
       console.log(error)
       showErrorToast('取得訂單錯誤')
+    } finally {
+      dispatch(setIsLoading(false))
     }
   }
 
   // 訂單詳情
   function openOrderDetailModal(order) {
+    dispatch(setIsLoading(true))
     setCurrentOrder({
       create_at: order.create_at || "", // 訂單編號
       is_paid: order.is_paid || "", // 付款狀態
@@ -81,6 +81,7 @@ const OrderManagement = () => {
     })    
     editModal.current = new bootstrap.Modal(editModalRef.current)
     editModal.current.show()
+    dispatch(setIsLoading(false))
   }
 
   // 開啟確認 modal（修改狀態）
@@ -97,6 +98,7 @@ const OrderManagement = () => {
 
   // 修改付款狀態API
   async function editOrder(){
+    dispatch(setIsLoading(true))
     try {
     const res = await axios.post(`${api}/v2/api/${path}/pay/${modalPaymentState.id}`)
     showSuccessToast(res.data.message)
@@ -105,10 +107,12 @@ const OrderManagement = () => {
     isConfirmModal.current.hide()
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
+    } finally {
+      dispatch(setIsLoading(false))
     }
   }
 
-    // 開啟確認 modal（刪除訂單）
+  // 開啟確認 modal（刪除訂單）
   function handleDeleteOrder(order){
     setModalDeleteOrder({
       id: order.id,
@@ -120,6 +124,7 @@ const OrderManagement = () => {
 
   // 刪除訂單API
   async function deleteOrder(id){
+    dispatch(setIsLoading(true))
     try {   
     const res = await axios.delete(`${api}/v2/api/${path}/admin/order/${id}`)
     showSuccessToast(res.data.message)
@@ -129,6 +134,8 @@ const OrderManagement = () => {
     } catch (error) {
       console.error(error)
       showErrorToast(error?.response?.data?.message)
+    } finally {
+      dispatch(setIsLoading(false))
     }
   }
 
@@ -139,15 +146,12 @@ const OrderManagement = () => {
     setModalDeleteOrder({})
   }
 
-    
-
   return(
     <>
-
       <div className='mb-3'>
-      <div className='d-flex justify-content-between mb-3'>
-        <h1 className='h4'>訂單管理</h1>
-      </div>
+        <div className='d-flex justify-content-between mb-3'>
+          <h1 className='h4'>訂單管理</h1>
+        </div>
         <table className='table' style={{ whiteSpace: 'nowrap' }}> 
           <thead style={{ position: 'sticky', top: 0, backgroundColor: '#fff' }}>
             <tr>
@@ -296,7 +300,7 @@ const OrderManagement = () => {
     
 
 
-      <Pagination pagination={pagination} getOrders={getOrders} />
+      <Pagination pagination={pagination} getOrders={getOrders} type={'getOrders'}  />
 
     </>
   )

@@ -21,8 +21,7 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
   async function handleSubmit(e) {
     e.preventDefault()
     if(isSubmitting) return
-    setIsSubmitting(true) 
-
+    setIsSubmitting(true)     
     try {
       const url = isEdit ? `${api}/v2/api/${path}/admin/product/${product.id}` : `${api}/v2/api/${path}/admin/product`
       const method = isEdit ? 'put' : 'post'
@@ -49,8 +48,8 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
     setIsEdit(false)
     fileInputRef.current.value = ''
     } catch (error) {
-      showErrorToast(error?.response?.data?.message[0])
-      
+      showErrorToast(error?.response?.data?.message)
+      console.log(error)
     } finally {
       setIsSubmitting(false)
     }
