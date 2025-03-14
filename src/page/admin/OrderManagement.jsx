@@ -187,7 +187,7 @@ const OrderManagement = () => {
     })
   }
 
-  // 新增/編輯 優惠券
+  // 編輯訂單
   async function handleSubmit(e) {
     dispatch(setIsLoading(true))
     e.preventDefault()
@@ -195,21 +195,20 @@ const OrderManagement = () => {
     setIsSubmitting(true) 
     console.log('submit',order)
 
-    const data = 
-      {
-        create_at: order.create_at,
-        is_paid: order.is_paid,
-        message: order.message,
-        products: order.products,
-        user: {
-          address: order.user.address,
-          email: order.email,
-          name: order.name,
-          tel: order.tel
-        },
-        num: order.num
-      }
-    
+    // const data = 
+    //   {
+    //     create_at: order.create_at,
+    //     is_paid: order.is_paid,
+    //     message: order.message,
+    //     products: order.products,
+    //     user: {
+    //       address: order.user.address,
+    //       email: order.email,
+    //       name: order.name,
+    //       tel: order.tel
+    //     },
+    //     num: order.num
+    //   }
     
     try {
       await axios.put(`${api}/v2/api/${path}/admin/order/${order.id}`,{data:{
