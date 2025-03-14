@@ -5,6 +5,8 @@ import { showSuccessToast,showDangerToast,showErrorToast } from '../../utils/toa
 
 import { useDispatch, useSelector } from 'react-redux'
 import { setCartQty, setIsLoading, setCart, setCartItemsQty } from '../../slice/cartReducer'
+import ProductCard from '../../component/ProductCard'
+import ProductList from '../../component/ProductList'
 
 const api = import.meta.env.VITE_BASE_URL
 const path = import.meta.env.VITE_API_PATH
@@ -13,6 +15,9 @@ const ProductDetail = () => {
   const dispatch = useDispatch()
   const { cartQty, cartItemsQty } = useSelector((state) => state.cart)
   const [productDetail,setProductDetail] = useState({})
+  const [productsList,setProductsList]=useState([]) // 產品列表
+
+
 
   // 取得購物車
   useEffect(() => {
@@ -190,6 +195,12 @@ const ProductDetail = () => {
     }
   },[id])
 
+  useEffect(()=>{
+    if (productDetail.category) {
+      getProductsList(productDetail.category)
+    }
+  },[productDetail])
+
   // 取得單一產品
   async function getProductDetail(id) {
     try {
@@ -205,95 +216,122 @@ const ProductDetail = () => {
     } catch (error) {
       console.log(error)
     }
+  }
 
+  // 取的產品列表
+  async function getProductsList(category) {
+    dispatch(setIsLoading(true))
+    try {
+      const res = await axios.get(`${api}/v2/api/${path}/products?&category=${category}`)
+      const upDated = res.data.products.filter((item)=> item.id !== productDetail.id)
+      setProductsList(upDated)
+      
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+    } finally {
+      dispatch(setIsLoading(false))
+      
+    }
   }
   return(
     <>
       <div className="container">
-      <nav aria-label="breadcrumb">
-      <ol className="breadcrumb">
-        <li className="breadcrumb-item">
-          <Link to="/">首頁</Link>
-        </li>
-        <li className="breadcrumb-item">
-          <Link to="/product">商城</Link>
+        <nav aria-label="breadcrumb">
+          <ul className="breadcrumb">
+            <li className="breadcrumb-item">
+              <Link to="/">首頁</Link>
+            </li>
+            <li className="breadcrumb-item">
+              <Link to="/product">商城</Link>
 
-        </li>
-        <li className="breadcrumb-item active" aria-current="page">
-          {productDetail.title}
-        </li>
-      </ol>
-    </nav>
-        <div className="product-detail">
-          <div className="modal-header">
-            <h1 className="mb-3 h3" id="exampleModalLabel">{productDetail.title}</h1>
-          </div>
-          <div className="modal-body">
-            <div className="row">
-              <div className="col-12 d-flex justify-content-between" >
-                <div className="product-modal-secondary-img-container">
-                  {Array.isArray(productDetail.imagesUrl) && productDetail?.imagesUrl.map((img)=>(
-                    <div key={img} className="mb-2">
-                      <img 
-                        src={img}
-                        alt="副圖"
-                        className="product-modal-secondary-img"
-                        onClick={()=>{
-                          setProductDetail({
-                            ...productDetail,
-                            imageUrl:img
-                          })
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-                  <img src={productDetail.imageUrl} alt="主圖" className="product-modal-primary-img" />
-                </div>
+            </li>
+            <li className="breadcrumb-item active" aria-current="page">
+              {productDetail.title}
+            </li>
+          </ul>
+        </nav>
+        <div className="mb-5">
+          <h1 className="mb-3 h3">{productDetail.title}</h1>
+          <div className="row">
+            <div className="col-12 d-flex justify-content-between" >
+              <div className="product-modal-secondary-img-container">
+                {Array.isArray(productDetail.imagesUrl) && productDetail?.imagesUrl.map((img)=>(
+                  <div key={img} className="mb-2">
+                    <img 
+                      src={img}
+                      alt="副圖"
+                      className="product-modal-secondary-img"
+                      onClick={()=>{
+                        setProductDetail({
+                          ...productDetail,
+                          imageUrl:img
+                        })
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
-              <div className="col-12 mt-2 d-flex align-items-center">
-                <span className="text-secondary">價格：</span>
-                <span className="text-danger me-2 fs-3">${productDetail.price}</span>
-                <del className="text-secondary fs-6">${productDetail.origin_price}</del>
-              </div>
-              <div className="col-12 mt-2 d-flex align-items-center">
-                <span className="text-secondary">數量：</span>
-                <span className="text-danger me-2 d-flex align-items-center ">
-                  <button 
-                    type="button"
-                    className={`btn btn-sm btn-outline-primary`}
-                    onClick={()=> handleReduceCartQty(null,null)}
-                  >-</button>
-                  <input
-                    type="text"
-                    className="form-control cart-number-input text-center "
-                    value={cartQty}
-                    onChange={handleCartQtyInputOnChange} 
-                    onBlur={(e)=>{handleCartQtyInputOnBlur(e,null,null,productDetail)}}
-                  />
-                  <button
-                    type="button"
-                    className={`btn btn-sm btn-outline-primary`}
-                    onClick={()=>handleAddCartQty(null,null,productDetail)}
-                  >+</button>
-                </span>
-                <span className="text-secondary fs-6">剩下{productDetail.stockQty }個</span>
-              </div>
-              <div className="col-12 mt-3">
+                <img src={productDetail.imageUrl} alt="主圖" className="product-modal-primary-img" />
+            </div>
+            </div>
+            <div className="col-12 mt-2 d-flex align-items-center">
+              <span className="text-secondary">價格：</span>
+              <span className="text-danger me-2 fs-3">${productDetail.price}</span>
+              <del className="text-secondary fs-6">${productDetail.origin_price}</del>
+            </div>
+            <div className="col-12 mt-2 d-flex align-items-center">
+              <span className="text-secondary">數量：</span>
+              <span className="text-danger me-2 d-flex align-items-center ">
+                <button 
+                  type="button"
+                  className={`btn btn-sm btn-outline-primary`}
+                  onClick={()=> handleReduceCartQty(null,null)}
+                >-</button>
+                <input
+                  type="text"
+                  className="form-control cart-number-input text-center "
+                  value={cartQty}
+                  onChange={handleCartQtyInputOnChange} 
+                  onBlur={(e)=>{handleCartQtyInputOnBlur(e,null,null,productDetail)}}
+                />
                 <button
                   type="button"
-                  className="btn btn-sm btn-primary w-100"
-                  onClick={()=>handleAddCartItem(productDetail.id,true) }>
-                  加入購物車
-                </button>
-              </div>
-              <div className="col-12 mt-3">
-                <h5 className="h6 text-p">產品描述：</h5>
-                <p className="text-secondary">{productDetail.description}</p>
-                <h5 className="h6">商品說明：</h5>
-                <p className="text-secondary pre-line">{productDetail.content}</p>
-              </div>
-          </div>
+                  className={`btn btn-sm btn-outline-primary`}
+                  onClick={()=>handleAddCartQty(null,null,productDetail)}
+                >+</button>
+              </span>
+              <span className="text-secondary fs-6">剩下{productDetail.stockQty }個</span>
+            </div>
+            <div className="col-12 mt-3">
+              <button
+                type="button"
+                className="btn btn-sm btn-primary w-100"
+                onClick={()=>handleAddCartItem(productDetail.id,true) }>
+                加入購物車
+              </button>
+            </div>
+            <div className="col-12 mt-3">
+              <h5 className="h6 text-p">產品描述：</h5>
+              <p className="text-secondary">{productDetail.description}</p>
+              <h5 className="h6">商品說明：</h5>
+              <p className="text-secondary pre-line">{productDetail.content}</p>
+            </div>
+        </div>
+        <div className="mt-3 mb-3">
+          <h5>更多推薦</h5>
+          {
+            productsList.length >0
+            ?
+            <ProductCard
+              productsList={productsList}
+              handleAddCartItem={handleAddCartItem}
+              getProductsList={getProductsList}
+            />
+            :
+            <p className="mt-3 text-secondary">沒有相似的商品QQ</p>
+          }
+
+
         </div>
       </div>
     </>

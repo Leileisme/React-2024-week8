@@ -26,7 +26,6 @@ const ProductPage = () => {
 
   // 取的產品列表
   async function getProductsList(page = 1,category=null) {
-    // setIsLoading(true)
     dispatch(setIsLoading(true))
     try {
       const res = await axios.get(

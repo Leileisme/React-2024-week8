@@ -108,7 +108,7 @@ const CouponManagement = () => {
     }
   }
 
-  // 取裡 優惠券數輸入格式
+  // 處理 優惠券數輸入格式
   function handleCouponChange(e) {
     const { name, value, checked, type } = e.target
     console.log(value)
