@@ -89,7 +89,7 @@ const OrderManagement = () => {
     console.log(productsArray)
     
     setOrder({
-      id: order.create_at || "",
+      id: order.id || "",
       paid_date: order.paid_date || "",
       create_at: order.create_at || "", // 訂單編號
       is_paid: order.is_paid || false, // 付款狀態
