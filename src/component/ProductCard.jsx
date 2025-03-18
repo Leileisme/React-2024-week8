@@ -20,6 +20,7 @@ const ProductCard = (props) => {
     productsList,
   } = props
   const navigate = useNavigate()
+  
   // 進入產品詳情
   const handleClickProduct = (productId) => {
     // 使用 navigate 進行路由跳轉
@@ -123,7 +124,7 @@ return(
     <div  className="row mt-4">
       {
         productsList.map((product)=>(
-              <div className="col-3 mb-4 " key={product.id}>
+              <div className="col-12 col-md-4 col-lg-3 mb-4 " key={product.id}>
                 <div 
                   className="card product-card" 
                   onClick={

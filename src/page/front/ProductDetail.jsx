@@ -235,7 +235,7 @@ const ProductDetail = () => {
   }
   return(
     <>
-      <div className="container">
+      <div className="container mt-5">
         <nav aria-label="breadcrumb">
           <ul className="breadcrumb">
             <li className="breadcrumb-item">

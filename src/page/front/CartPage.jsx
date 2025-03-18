@@ -17,14 +17,19 @@ const CartPage = () =>{
   const cartItemsQty = useSelector(state=> state.cart.cartItemsQty)
   const [toPay,setToPay] = useState(false) // 是否「去買單」
   const formCart = true // 是否購物車表單
+  const [couponCode, setCouponCode] = useState("") // 優惠碼
+  const [couponTotal, setCouponTotal] = useState("") // 折扣價
+
 
   useEffect(()=>{
     getCart()  
+    console.log('購物車', cart);
   },[])
 
   // 取得購物車列表
   async function getCart() {
     dispatch(setIsLoading(true))
+    
     try {
       const res = await axios.get(`${api}/v2/api/${path}/cart`)
       dispatch(setCart(res.data.data))
@@ -52,21 +57,21 @@ const CartPage = () =>{
     }
   }
 
-    // 編輯購物車 單獨產品數量
-    async function editCartItem(cart_id,product_id,qty) {
-      dispatch(setIsLoading(true))
-      try {
-        await axios.put(`${api}/v2/api/${path}/cart/${cart_id}`,{data:{
-          product_id,
-          qty
-        }})
-        
-        getCart()
-      } catch (error) {
-        showErrorToast(error?.response?.data?.message)
-        dispatch(setIsLoading(false))
-      }
+  // 編輯購物車 單獨產品數量
+  async function editCartItem(cart_id,product_id,qty) {
+    dispatch(setIsLoading(true))
+    try {
+      await axios.put(`${api}/v2/api/${path}/cart/${cart_id}`,{data:{
+        product_id,
+        qty
+      }})
+      
+      getCart()
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+      dispatch(setIsLoading(false))
     }
+  }
   
 
   // 購物車 的 商品們數量
@@ -226,7 +231,29 @@ const CartPage = () =>{
     }
   } 
 
-  
+  function handleCoupOnChange(e) {
+    setCouponCode(e.target.value)
+  }
+
+  // 套用優惠券
+  async function useCoupon() {
+    dispatch(setIsLoading(true))
+    try {
+      const res = await axios.post(`${api}/v2/api/${path}/coupon`,{data:{
+        code:couponCode
+      }})
+      console.log(res.data.data.final_total)
+
+      showSuccessToast(res.data.message)
+      setCouponCode("")
+      getCart()  
+      setCouponTotal(res.data.data.final_total)
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+    } finally{
+      dispatch(setIsLoading(false))
+    }
+  }
 
 
   return(<>
@@ -269,7 +296,7 @@ const CartPage = () =>{
                           </td>
                           <td className="align-content-center" style={{ width: '100px' }}>
                             <div className="d-flex justify-content-end">
-                              <span className="text-danger">$ {item.final_total}</span>
+                              <span className="text-danger">$ {item.total}</span>
                             </div>
                           </td>
                         </tr>
@@ -280,12 +307,43 @@ const CartPage = () =>{
                         <td className="align-content-center">總價</td>
                         <td className="align-content-center">
                           <div className="d-flex justify-content-end text-danger fw-bold">
-                            $ {cart?.final_total}
+                            $ {cart?.total}
                           </div>
                         </td>
                       </tr>
+                      {
+                        cart.final_total &&
+                        <tr>
+                        <td></td>
+                        <td></td>
+                        <td className="align-content-center text-bg-danger">折扣後</td>
+                        <td className="align-content-center text-bg-danger">
+                          <div className="d-flex justify-content-end fw-bold">
+                            $ {cart.final_total}
+                          </div>
+                        </td>
+                      </tr>
+                      }
                     </tbody>
                   </table>
+
+                  <div className="mb-5 d-flex justify-content-end align-items-center">
+                    <div className="text-secondary me-3">輸入「666」 限時8折</div>
+                    <div className="form-floating me-3">
+                      <input
+                        type="text"
+                        className="form-control me-3"
+                        id="coupon"
+                        placeholder="coupon"
+                        value={couponCode}
+                        onChange={handleCoupOnChange}
+                      />
+                      <label htmlFor="coupon">使用折扣碼</label>
+
+                    </div>
+                      <button type="button" className="btn btn-primary" onClick={useCoupon}> 確定</button>
+                  </div>
+
                   <h5 className="card-title mb-2">訂購資訊</h5>
                   <div className="card-text">
                     <form onSubmit={handleSubmit(onSubmit)}>
@@ -490,7 +548,7 @@ const CartPage = () =>{
                       <td className="align-content-center" style={{ width: '100px' }}>
                         <div className="d-flex justify-content-end">
                           <span className="text-danger text-end">
-                            $ {item.final_total}
+                            $ {item.total}
                           </span>
                         </div>
                       </td>
@@ -504,10 +562,11 @@ const CartPage = () =>{
                     <td className="align-content-center">總價</td>
                     <td className="align-content-center">
                       <div className="d-flex justify-content-end text-danger fw-bold">
-                        $ {cart?.final_total}
+                        $ {cart?.total}
                       </div>
                     </td>
                   </tr>
+                  
                 </tbody>
               </table>
 

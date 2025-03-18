@@ -53,7 +53,7 @@ const AdminLayout = () => {
   <header className="fixed-top bg-white">
     <nav className="navbar navbar-expand bg-body-tertiary p-2">
       <div className="container-fluid">
-        <Link className="navbar-brand" to='/admin'>管理員控制台</Link>
+        <Link className="navbar-brand" to='/admin'>控制台</Link>
         <div className="collapse navbar-collapse d-flex justify-content-between" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-0">
             {

@@ -87,68 +87,70 @@ const ProductPage = () => {
   }
 
   return(<>
-    <div className="row">
-      <aside className="col-2">
-        <ul className="list-group">
-          {
-            productCategory.map((category)=>(
-              <li className="list-group-item  aside-list"  key={category}>
-                <a 
-                  onClick={(e)=>handleCategoryClick(e,category)}
-                  href="#"
-                  className="text-decoration-none text-dark">
-                  {category}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </aside>
+    <div className="container mt-5">
+      <div className="row">
+        <aside className="col-2 col-sm-12">
+          <ul className="list-group">
+            {
+              productCategory.map((category)=>(
+                <li className="list-group-item  aside-list"  key={category}>
+                  <a 
+                    onClick={(e)=>handleCategoryClick(e,category)}
+                    href="#"
+                    className="text-decoration-none text-dark">
+                    {category}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </aside>
 
-      <div className="col-10">
-        <div className="d-flex justify-content-between">
-          <h1 className="h3">
-            線上商城
-          </h1>
-          <div className="btn-group">
-            <button 
-              type="button" 
-              className={`btn btn-outline-primary select-list-type ps-2 pe-2 ${isList ? "active" : ""} align-items-center d-flex`}
-              style={{height:"25px",fontSize:"1rem"}}
-              onClick={()=> setIsList(true)}
-              >
-              <i className="bi bi-justify" 
-              ></i>
-            </button>
-            <button
-              type="button"
-              className={`btn btn-outline-primary select-list-type ps-2 pe-2 ${!isList ? "active" : ""} align-items-center d-flex`}
-              style={{height:"25px",fontSize:"1rem"}}
-              onClick={()=> setIsList(false)}>
-              <i className="bi bi-grid"></i>
-            </button>
+        <div className="col-10 col-sm-12">
+          <div className="d-flex justify-content-between">
+            <h1 className="h3">
+              線上商城
+            </h1>
+            <div className="btn-group">
+              <button 
+                type="button" 
+                className={`btn btn-outline-primary select-list-type ps-2 pe-2 ${isList ? "active" : ""} align-items-center d-flex`}
+                style={{height:"25px",fontSize:"1rem"}}
+                onClick={()=> setIsList(true)}
+                >
+                <i className="bi bi-justify" 
+                ></i>
+              </button>
+              <button
+                type="button"
+                className={`btn btn-outline-primary select-list-type ps-2 pe-2 ${!isList ? "active" : ""} align-items-center d-flex`}
+                style={{height:"25px",fontSize:"1rem"}}
+                onClick={()=> setIsList(false)}>
+                <i className="bi bi-grid"></i>
+              </button>
+            </div>
           </div>
+          {
+            isList 
+            ?
+            <ProductList
+              productsList={productsList}
+              handleAddCartItem={handleAddCartItem}
+              getProductsList={getProductsList}
+            />
+            :
+            <ProductCard
+              productsList={productsList}
+              handleAddCartItem={handleAddCartItem}
+              getProductsList={getProductsList}
+            />
+          }
+          <Pagination
+            pagination={pagination}
+            handlePageClick={handlePageClick}
+            type={'handlePageClick'}
+          />
         </div>
-        {
-          isList 
-          ?
-          <ProductList
-            productsList={productsList}
-            handleAddCartItem={handleAddCartItem}
-            getProductsList={getProductsList}
-          />
-          :
-          <ProductCard
-            productsList={productsList}
-            handleAddCartItem={handleAddCartItem}
-            getProductsList={getProductsList}
-          />
-        }
-        <Pagination
-          pagination={pagination}
-          handlePageClick={handlePageClick}
-          type={'handlePageClick'}
-        />
       </div>
     </div>
   </>)
