@@ -5,7 +5,7 @@
 想為爸爸打造一個眼鏡購物網站！
 ```
 
-### [前往觀看](https://leileisme.github.io/React-2024-week8/)
+### 前往觀看：[有型眼鏡 購物網](https://leileisme.github.io/React-2024-week8/)
 
 - 前台
   - 首頁
