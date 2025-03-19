@@ -5,6 +5,13 @@ body {
   padding: 0;
 }
 
+.logo-img {
+  width: 40px; /* 根據需要調整圖片大小 */
+  height: auto;
+  border: 0.5px solid #595959;
+  border-radius: 100%;
+}
+
 .footer-bg{
   background-color: #f9f9f9;
 }

@@ -68,7 +68,10 @@ const FrontLayout = () => {
   <header className="fixed-top bg-white">
     <nav className="navbar navbar-expand-lg bg-body-tertiary p-2">
       <div className="container-fluid">
-        <NavLink className="navbar-brand" to={'/'}>有型眼鏡</NavLink>
+        <NavLink className="navbar-brand d-flex align-items-center" to={'/'}>
+        <i class="bi bi-eyeglasses me-2 fs-1"></i>
+        有型眼鏡
+        </NavLink>
         
         {/* 折疊按鈕 */}
         <button 
