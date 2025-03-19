@@ -1,18 +1,20 @@
 body {
   padding-top: 55px;
   background-color: aqua;
-
   margin: 0;
   padding: 0;
 }
 
+.footer-bg{
+  background-color: #f9f9f9;
+}
+
 .home-carousel {
   width: 100%;
-  height: 100vh; /* 設定為視窗高度 */
-  overflow: hidden; /* 隱藏溢出內容 */
+  height: 100vh; 
+  overflow: hidden; 
   display: flex;
-  align-items: last baseline; /* 垂直置中 */
-  justify-content: center; /* 水平置中 */
+  justify-content: center; 
   position: relative;
 }
 
@@ -61,14 +63,14 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  width: 55%;
-  height: 40%;
+  width: 450px;
+  height: 280px;
 }
 
 .home-store-text-box-border {
   border: 1px solid #595959;
-  width: 93%;
-  height: 85%;
+  width: 410px;
+  height: 250px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -81,7 +83,52 @@ body {
   font-size: 5rem;
 }
 
+.home-imagery-container{
+  width: 100%;
+  height: 100vh; 
+  overflow: hidden; 
+  justify-content: center; 
+}
 
+.home-imagery-container img{
+  width: 100%;
+  height: 100%; 
+  overflow: hidden; 
+  justify-content: center; 
+  align-items: last center;
+  object-fit: cover;
+}
+
+.home-imagery-container-text{
+  position: absolute;
+  top: 17%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.cart{
+  min-height: 100vh;
+  margin-top: 95px;
+}
+
+@media (max-width: 768px) {
+  .cart-table-container {
+    overflow-x: auto;
+  }
+
+  .cart-table {
+    min-width: 600px; /* 確保表格內容不會過度縮小 */
+  }
+}
+
+.outline-margin{
+  margin-top:75px
+}
+
+
+.product-category {
+  width:50px;
+}
 
 .product-card:hover {
   transform: scale(105%);
@@ -95,9 +142,21 @@ body {
   object-fit: cover;
 }
 
+.product-list-md-img{
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
 .product-card-img {
   width: 150px;
   height: 150px;
+  object-fit: cover;
+}
+
+.product-card-img-home {
+  width: 150px;
+  height: 280px;
   object-fit: cover;
 }
 
@@ -123,9 +182,13 @@ body {
   color:  #0d6efd !important;
 }
 
+.product-modal-container{
+  /* max-width: 1200px !important; */
+}
+
 .product-modal-primary-img{
   width:calc(100% - 180px) ;
-  height: auto;
+  height:450px;
   object-fit: cover;
 }
 
@@ -143,7 +206,7 @@ body {
 }
 
 .product-modal-secondary-img-container{
-  height: 500px;
+  height: 400px;
   overflow-y: scroll;
   padding: 0 10px ;
 }
@@ -186,38 +249,88 @@ body {
   border-radius: 10px;
 }
 
-@media (max-width: 576px) {
-  .home-store-text-box {
-    width: 80%; /* 可調整為你需要的寬度 */
-    height: 40%; /* 可調整為你需要的高度 */
-  }
 
-  .home-store-text-box-border {
-    width: 92%; /* 可調整為你需要的寬度 */
-    height: 88%; /* 可調整為你需要的高度 */
-  }
-
-  .product-card-img{
-    width: 150px;
-    height: 350px;
-    object-fit: cover;
-  }
-}
 
 @media (max-width: 992px) {
   .home-store-text-box {
-    width: 45%; /* 可調整為你需要的寬度 */
-    height: 40%; /* 可調整為你需要的高度 */
+    width: 420px; /* 可調整為你需要的寬度 */
+    height: 270px; /* 可調整為你需要的高度 */
   }
 
   .home-store-text-box-border {
-    width: 95%; /* 可調整為你需要的寬度 */
-    height: 85%; /* 可調整為你需要的高度 */
+    width: 400px; /* 可調整為你需要的寬度 */
+    height: 250px; /* 可調整為你需要的高度 */
   }
 
   .product-card-img{
     width: 150px;
     height: 200px;
     object-fit: cover;
+  }
+
+  .product-card-img-home {
+    width: 150px;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  
+}
+
+@media (max-width: 768px) {
+
+
+  .product-card-img{
+    width: 150px;
+    height: 350px;
+    object-fit: cover;
+  }
+
+  .product-card-img-home {
+    width: 150px;
+    height: 350px;
+    object-fit: cover;
+  }
+
+  .product-modal-secondary-img{
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+
+
+  .product-modal-secondary-img-container{
+    height: 250px;
+    overflow-y: scroll;
+    padding: 0 10px ;
+  }
+
+  .product-modal-primary-img{
+    width:calc(100% - 135px) ;
+    height: 250px;
+    object-fit: cover;
+  }
+  
+  
+}
+
+@media (max-width: 576px) {
+  body{
+    font-size: 0.83rem !important;
+  }
+
+  .home-store-text-box {
+    width: 320px; /* 可調整為你需要的寬度 */
+    height: 300px; /* 可調整為你需要的高度 */
+  }
+
+  .home-store-text-box-border {
+    width: 300px; /* 可調整為你需要的寬度 */
+    height: 280px; /* 可調整為你需要的高度 */
+  }
+
+  .cart-number-input {
+    width: 35px !important;
+    height: 31px;
   }
 }

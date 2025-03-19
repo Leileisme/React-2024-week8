@@ -59,7 +59,6 @@ const CouponManagement = () => {
   const openAddModal = (item) =>{
     if(item) {
       setCoupon(item)
-      console.log('列表編輯',item)
       setIsEdit(true)
     } 
     addModal.current = new bootstrap.Modal(addModalRef.current)
@@ -100,7 +99,7 @@ const CouponManagement = () => {
       getCoupon()
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
-      console.log(error)
+      // console.log(error)
       
     } finally {
       setIsSubmitting(false)
@@ -111,9 +110,6 @@ const CouponManagement = () => {
   // 處理 優惠券數輸入格式
   function handleCouponChange(e) {
     const { name, value, checked, type } = e.target
-    console.log(value)
-    
-
     let updatedValue = value
     updatedValue = type === "checkbox" ? (checked ? 1 : 0) : value
 
@@ -137,7 +133,7 @@ const CouponManagement = () => {
       setCoupons(upDated)
       setPagination(res.data.pagination)
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       showErrorToast(error?.response?.data?.message)
     } finally {
       dispatch(setIsLoading(false))
@@ -152,7 +148,7 @@ const CouponManagement = () => {
 
   // 刪除訂單API
   async function deleteCoupon(id){
-    console.log(id)
+    // console.log(id)
     
     dispatch(setIsLoading(true))
     try {   
@@ -194,7 +190,7 @@ const CouponManagement = () => {
     
   return(
     <>
-      <div className="mb-3">
+      <div className="mb-3 outline-margin">
         <div className='d-flex justify-content-between mb-3'>
           <h1 className='h4'>優惠券管理</h1>
           <button type='button' className='btn btn-primary' onClick={()=> openAddModal()}>新增優惠券</button>

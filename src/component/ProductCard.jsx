@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from 'react-redux'
 import { showDangerToast,showErrorToast,showSuccessToast } from "../utils/toastUtils"
-import { useEffect, useState } from "react"
 import { setCartQty,setCart,setCartItemsQty,setIsLoading} from "../slice/cartReducer"
 import axios from "axios"
 
@@ -9,7 +8,7 @@ const api = import.meta.env.VITE_BASE_URL
 const path = import.meta.env.VITE_API_PATH
 
 const ProductCard = (props) => {
-  const cart = useSelector(state=> state.cart.cart)
+
   const productDetail = useSelector(state=> state.cart.productDetail)
   const cartQty = useSelector(state=> state.cart.cartQty)
   const cartItemsQty = useSelector(state=> state.cart.cartItemsQty)

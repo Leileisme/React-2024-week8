@@ -5,8 +5,8 @@ import AdminLayout from '../AdminLayout'
 
 const AdminRoute = () => {
   const isLogin = useSelector(state => state.state.isLogin)
-  // return isLogin ? <AdminLayout /> : <Navigate to="/login" replace />
-  return <AdminLayout /> 
+  return isLogin ? <AdminLayout /> : <Navigate to="/login" replace />
+  // return <AdminLayout /> 
 }
 
 export default AdminRoute

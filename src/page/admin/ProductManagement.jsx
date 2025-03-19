@@ -144,7 +144,7 @@ const ProductManagement = () => {
 
   return(
     <>
-      <div className="mb-3">
+      <div className="mb-3 outline-margin">
         <div className='d-flex justify-content-between mb-3'>
           <h1 className='h4'>產品管理</h1>
           <button type='button' className='btn btn-primary' onClick={openAddModal}>新增產品</button>

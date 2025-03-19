@@ -2,7 +2,6 @@ import FrontLayout from './FrontLayout.jsx'
 import AdminLayout from './AdminLayout.jsx'
 import LoginPage from './page/LoginPage.jsx'
 import HomePage from './page/front/HomePage.jsx'
-import AboutPage from './page/front/AboutPage.jsx'
 import ProductPage from './page/front/ProductPage.jsx'
 import ProductDetail from './page/front/ProductDetail.jsx'
 import CartPage from './page/front/CartPage.jsx'
@@ -11,6 +10,7 @@ import OrderManagement from './page/admin/OrderManagement.jsx'
 import CouponManagement from './page/admin/CouponManagement.jsx'
 import NotFoundPage from './page/NotFoundPage.jsx'
 import AdminRoute from './component/AdminRoute.jsx'
+import AdminHome from './page/admin/AdminHome.jsx'
 
 const routes = [
   {
@@ -20,10 +20,6 @@ const routes = [
       {
         path:'',
         element: <HomePage />
-      },
-      {
-        path:'about',
-        element:<AboutPage />
       },
       {
         path:'product',
@@ -42,6 +38,10 @@ const routes = [
     path:'/admin',
     element: <AdminRoute />,
     children:[
+      {
+        path: '',
+        element: <AdminHome />
+      },
       {
         path:'product',
         element: <ProductManagement />

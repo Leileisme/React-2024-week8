@@ -1,14 +1,11 @@
 
-import { useEffect, useState } from 'react'
-import { showSuccessToast, showErrorToast,showDangerToast } from '../../utils/toastUtils'
-import Pagination from '../../component/Pagination'
-import ProductList from '../../component/ProductList'
-import ProductCard from '../../component/ProductCard'
-import ProductModalDetail from '../../component/ProductModalDetail'
 import axios from 'axios'
-import { getCart, setIsLoading,setCartQty,setCart,setCartItemsQty} from '../../slice/cartReducer'
+import { useCallback, useEffect, useState } from 'react'
+import { showSuccessToast, showErrorToast,showDangerToast } from '../../utils/toastUtils'
 import { useDispatch, useSelector, } from 'react-redux' 
+import { setIsLoading,setCartQty, setCart, setCartItemsQty} from '../../slice/cartReducer'
 import { useNavigate } from 'react-router'
+
 
 
 const api = import.meta.env.VITE_BASE_URL
@@ -17,20 +14,16 @@ const path = import.meta.env.VITE_API_PATH
 const HomePage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const cart = useSelector(state=> state.cart.cart)
   const productDetail = useSelector(state=> state.cart.productDetail)
   const cartQty = useSelector(state=> state.cart.cartQty)
   const cartItemsQty = useSelector(state=> state.cart.cartItemsQty)
-  const [productsList,setProductsList]= useState([]) // 全部產品
   const [productsRandom,setProductsRandom]= useState([]) // 隨機產品3個
 
-
   // 取全部產品
-  async function getProductsList() {
+  const getProductsList = useCallback(async()=> {
     dispatch(setIsLoading(true))
     try {
       const res = await axios.get(`${api}/v2/api/${path}/products/all`)
-      setProductsList(res.data.products)
 
       // 隨機打亂順序做產品推薦
       const random = res.data.products.sort(()=>{
@@ -43,7 +36,7 @@ const HomePage = () => {
       dispatch(setIsLoading(false))
       
     }
-  }
+  },[dispatch])
 
   // 進入產品詳情
   const handleClickProduct = (productId) => {
@@ -95,10 +88,59 @@ const HomePage = () => {
       }
     }
 
+  // 取得購物車列表
+  async function getCart() {
+    dispatch(setIsLoading(true)) 
+    try {
+      const res = await axios.get(`${api}/v2/api/${path}/cart`)
+      dispatch(setCart(res.data.data))
+      const _cart = res.data.data.carts.map((item)=>{
+        if(item.qty > item.product.stockQty){
+          showDangerToast(`商品${item.product.title}庫存不足，最多只能購買${item.product.stockQty}個`)
+          item.qty = item.product.stockQty
+          editCartItem(item.id,item.product_id,item.product.stockQty)
+        }
+        return item
+      })
+      
+      dispatch(
+        setCartItemsQty(
+          _cart.map(cart=>({
+            id: cart.product_id,
+            qty:cart.qty
+          }))
+        )
+      )
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+    } finally {
+      dispatch(setIsLoading(false))
+    }
+  }
+
+          // 編輯購物車 單獨產品數量
+  async function editCartItem(cart_id,product_id,qty) {
+    dispatch(setIsLoading(true))
+    try {
+      await axios.put(`${api}/v2/api/${path}/cart/${cart_id}`,{data:{
+        product_id,
+        qty
+      }})
+      
+      getCart()
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+      dispatch(setIsLoading(false))
+
+    }
+  }
+
+    
+
 
   useEffect(()=>{
     getProductsList()
-  },[])
+  },[getProductsList])
 
   return(<>
 
@@ -127,7 +169,7 @@ const HomePage = () => {
                 onClick={
                   ()=>handleClickProduct(product.id)
                 }>
-              <img src={product.imageUrl}  className="card-img-top product-card-img position-relative"  alt="商品主圖" />
+              <img src={product.imageUrl}  className="card-img-top product-card-img-home position-relative"  alt="商品主圖" />
               <div className="card-body product-car-body d-flex flex-column justify-content-between">
                 <div>
                   <h5 className="card-title product-card-title h6">{product.title}</h5>
@@ -158,10 +200,10 @@ const HomePage = () => {
       </div>
     </section>
 
-    <section className="home-store mt-3 mb-3">
+    <section className="home-store mt-3 mb-5">
       <img src="https://images.unsplash.com/photo-1561823202-065ccdb3ae14?q=80&w=2073&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="" alt="型眼鏡" />
       <div className="home-store-title">
-        <h2 className="h3">有  型 眼 鏡</h2>
+        <h2 className="h3">有  型 門 市</h2>
       </div>
 
       <div className="home-store-text-box">
@@ -176,7 +218,7 @@ const HomePage = () => {
       </div>
     </section>
 
-    <section className="container mt-3 mb-3">
+    <section className="container mt-5 mb-3 fs-6">
       <div className="row">
         <div className="col-12 d-flex justify-content-center">
           <h2 className="h3 mb-5 mt-3">有  型  承 諾</h2>
@@ -210,6 +252,25 @@ const HomePage = () => {
         <div className="col-12 col-lg-2 col-md-4 mb-5 d-flex justify-content-center align-items-center flex-column">
             <i className="bi bi-hand-thumbs-up home-icon "></i>
             <div>只為您推薦，決不推銷</div>
+        </div>
+      </div>
+    </section>
+    
+    <section className="home-imagery-container d-flex justify-content-center position-relative mt-5">
+      <div className="w-75">
+        <img src="https://images.unsplash.com/photo-1648071216843-0d304a6d49b2?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="" alt="眼鏡店首頁" />
+      </div>
+      <div className="w-25">
+        <div className="h-50">
+          <img src="https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="" alt="眼鏡店首頁" />
+        </div>
+        <div className="h-50">
+          <img src="https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?q=80&w=2487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="" alt="眼鏡店首頁" />
+        </div>
+
+        <div className="home-imagery-container-text d-flex justify-content-center flex-column text-white">
+          <h2 className="h3 text-center">寵 物 友 善</h2>
+          <div className="mt-2">歡 迎 帶 寵 物 一 同 前 來</div>
         </div>
       </div>
     </section>

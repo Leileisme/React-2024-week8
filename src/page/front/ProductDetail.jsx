@@ -235,104 +235,118 @@ const ProductDetail = () => {
   }
   return(
     <>
-      <div className="container mt-5">
-        <nav aria-label="breadcrumb">
-          <ul className="breadcrumb">
-            <li className="breadcrumb-item">
-              <Link to="/">首頁</Link>
-            </li>
-            <li className="breadcrumb-item">
-              <Link to="/product">商城</Link>
+      <div className="container outline-margin">
+        <div className="row">
+          <div className="col-12">
+            <nav aria-label="breadcrumb">
+              <ul className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link to="/">首頁</Link>
+                </li>
+                <li className="breadcrumb-item">
+                  <Link to="/product">商城</Link>
 
-            </li>
-            <li className="breadcrumb-item active" aria-current="page">
-              {productDetail.title}
-            </li>
-          </ul>
-        </nav>
-        <div className="mb-5">
-          <h1 className="mb-3 h3">{productDetail.title}</h1>
-          <div className="row">
-            <div className="col-12 d-flex justify-content-between" >
-              <div className="product-modal-secondary-img-container">
-                {Array.isArray(productDetail.imagesUrl) && productDetail?.imagesUrl.map((img)=>(
-                  <div key={img} className="mb-2">
-                    <img 
-                      src={img}
-                      alt="副圖"
-                      className="product-modal-secondary-img"
-                      onClick={()=>{
-                        setProductDetail({
-                          ...productDetail,
-                          imageUrl:img
-                        })
-                      }}
-                    />
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  {productDetail.title}
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+          <div className="col-12 product-modal-container ">
+            <div className="mb-5">
+              <h1 className="mb-3 h3">{productDetail.title}</h1>
+              <div className="row ">
+                <div className="col-12 d-flex justify-content-between " >
+                  <div className="product-modal-secondary-img-container">
+                    {Array.isArray(productDetail.imagesUrl) && productDetail?.imagesUrl.map((img)=>(
+                      <div key={img} className="mb-2">
+                        <img 
+                          src={img}
+                          alt="副圖"
+                          className="product-modal-secondary-img"
+                          onClick={()=>{
+                            setProductDetail({
+                              ...productDetail,
+                              imageUrl:img
+                            })
+                          }}
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-                <img src={productDetail.imageUrl} alt="主圖" className="product-modal-primary-img" />
+                    <img src={productDetail.imageUrl} alt="主圖" className="product-modal-primary-img" />
+                </div>
+                </div>
+                <div className="col-12 mt-2 d-flex align-items-center">
+                  <span className="text-secondary">價格：</span>
+                  <span className="text-danger me-2 fs-3">${productDetail.price}</span>
+                  <del className="text-secondary fs-6">${productDetail.origin_price}</del>
+                </div>
+                <div className="col-12 mt-2 d-flex align-items-center">
+                  <span className="text-secondary">數量：</span>
+                  <span className="text-danger me-2 d-flex align-items-center ">
+                    <button 
+                      type="button"
+                      className={`btn btn-sm btn-outline-primary`}
+                      onClick={()=> handleReduceCartQty(null,null)}
+                    >-</button>
+                    <input
+                      type="text"
+                      className="form-control cart-number-input text-center "
+                      value={cartQty}
+                      onChange={handleCartQtyInputOnChange} 
+                      onBlur={(e)=>{handleCartQtyInputOnBlur(e,null,null,productDetail)}}
+                    />
+                    <button
+                      type="button"
+                      className={`btn btn-sm btn-outline-primary`}
+                      onClick={()=>handleAddCartQty(null,null,productDetail)}
+                    >+</button>
+                  </span>
+                  <span className="text-secondary fs-6">剩下{productDetail.stockQty }個</span>
+                </div>
+                <div className="col-12 mt-3">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-primary w-100"
+                    onClick={()=>handleAddCartItem(productDetail.id,true) }>
+                    加入購物車
+                  </button>
+                </div>
+                <div className="col-12 mt-3">
+                  <h5 className="h6 text-p">產品描述：</h5>
+                  <p className="text-secondary">{productDetail.description}</p>
+                  <h5 className="h6">商品說明：</h5>
+                  <p className="text-secondary pre-line">{productDetail.content}</p>
+                </div>
             </div>
-            </div>
-            <div className="col-12 mt-2 d-flex align-items-center">
-              <span className="text-secondary">價格：</span>
-              <span className="text-danger me-2 fs-3">${productDetail.price}</span>
-              <del className="text-secondary fs-6">${productDetail.origin_price}</del>
-            </div>
-            <div className="col-12 mt-2 d-flex align-items-center">
-              <span className="text-secondary">數量：</span>
-              <span className="text-danger me-2 d-flex align-items-center ">
-                <button 
-                  type="button"
-                  className={`btn btn-sm btn-outline-primary`}
-                  onClick={()=> handleReduceCartQty(null,null)}
-                >-</button>
-                <input
-                  type="text"
-                  className="form-control cart-number-input text-center "
-                  value={cartQty}
-                  onChange={handleCartQtyInputOnChange} 
-                  onBlur={(e)=>{handleCartQtyInputOnBlur(e,null,null,productDetail)}}
+          </div>
+
+          <div className="col-12">
+            <div className="mt-3 mb-3">
+              <h5>更多推薦</h5>
+              {
+                productsList.length >0
+                ?
+                <ProductCard
+                  productsList={productsList}
+                  handleAddCartItem={handleAddCartItem}
+                  getProductsList={getProductsList}
                 />
-                <button
-                  type="button"
-                  className={`btn btn-sm btn-outline-primary`}
-                  onClick={()=>handleAddCartQty(null,null,productDetail)}
-                >+</button>
-              </span>
-              <span className="text-secondary fs-6">剩下{productDetail.stockQty }個</span>
+                :
+                <p className="mt-3 text-secondary">沒有相似的商品QQ</p>
+              }
             </div>
-            <div className="col-12 mt-3">
-              <button
-                type="button"
-                className="btn btn-sm btn-primary w-100"
-                onClick={()=>handleAddCartItem(productDetail.id,true) }>
-                加入購物車
-              </button>
-            </div>
-            <div className="col-12 mt-3">
-              <h5 className="h6 text-p">產品描述：</h5>
-              <p className="text-secondary">{productDetail.description}</p>
-              <h5 className="h6">商品說明：</h5>
-              <p className="text-secondary pre-line">{productDetail.content}</p>
-            </div>
+          </div>
         </div>
-        <div className="mt-3 mb-3">
-          <h5>更多推薦</h5>
-          {
-            productsList.length >0
-            ?
-            <ProductCard
-              productsList={productsList}
-              handleAddCartItem={handleAddCartItem}
-              getProductsList={getProductsList}
-            />
-            :
-            <p className="mt-3 text-secondary">沒有相似的商品QQ</p>
-          }
+        
 
 
-        </div>
+
+
+
       </div>
     </>
 )}

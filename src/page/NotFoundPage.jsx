@@ -1,11 +1,3 @@
-// const NotFoundPage = () =>{
-//   return(<>
-//     404 頁面錯誤
-//   </>)
-// }
-
-// export default NotFoundPage
-
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 

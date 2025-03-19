@@ -66,29 +66,24 @@ const OrderManagement = () => {
     }
     try {
       const res =  await axios.get(`${api}/v2/api/${path}/admin/orders?page=${page}`)
-      console.log('getOrders',res)
+      // console.log('getOrders',res)
       
       setOrders(res.data.orders)
       setPagination(res.data.pagination)
     } catch (error) {
-      console.log(error)
-      showErrorToast('取得訂單錯誤')
+      // console.log(error)
+      showErrorToast(error?.response?.data?.message)
     } finally {
       dispatch(setIsLoading(false))
     }
   }
-
-  useEffect(()=>{
-    console.log(orders)
-    
-  },[orders])
 
   // 訂單詳情
   function openOrderDetailModal(order) {
     dispatch(setIsLoading(true))
     const productsArray = Object.values(order.products)
     setProductDetails(productsArray)
-    console.log(productsArray)
+    // console.log(productsArray)
     
     setOrder({
       id: order.id || "",
@@ -117,7 +112,6 @@ const OrderManagement = () => {
       id: order.id,
       create_at: order.create_at
     })  // 設定要開啟 Modal 的產品 id
-    console.log(order)
     
     isConfirmModal.current = new bootstrap.Modal(isConfirmModalRef.current)
     isConfirmModal.current.show()    
@@ -195,7 +189,6 @@ const OrderManagement = () => {
     e.preventDefault()
     if(isSubmitting) return
     setIsSubmitting(true) 
-    console.log('submit',order)
 
     try {
       await axios.put(`${api}/v2/api/${path}/admin/order/${order.id}`,{data:order} )
@@ -218,7 +211,7 @@ const OrderManagement = () => {
       getOrders()
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
-      console.log(error)
+      // console.log(error)
     } finally {
       setIsSubmitting(false)
       dispatch(setIsLoading(false))
@@ -240,7 +233,7 @@ const OrderManagement = () => {
 
   return(
     <>
-      <div className='mb-3'>
+      <div className='mb-3 outline-margin'>
         <div className='d-flex justify-content-between mb-3'>
           <h1 className='h4'>訂單管理</h1>
         </div>

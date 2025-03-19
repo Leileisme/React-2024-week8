@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import axios from "axios"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { showSuccessToast,showDangerToast,showErrorToast } from '../../utils/toastUtils'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCartQty, setCart, setCartItemsQty,setIsLoading } from '../../slice/cartReducer'
@@ -18,16 +18,11 @@ const CartPage = () =>{
   const [toPay,setToPay] = useState(false) // 是否「去買單」
   const formCart = true // 是否購物車表單
   const [couponCode, setCouponCode] = useState("") // 優惠碼
-  const [couponTotal, setCouponTotal] = useState("") // 折扣價
 
 
-  useEffect(()=>{
-    getCart()  
-    console.log('購物車', cart);
-  },[])
 
   // 取得購物車列表
-  async function getCart() {
+  const getCart=useCallback(async() =>  {
     dispatch(setIsLoading(true))
     
     try {
@@ -55,7 +50,11 @@ const CartPage = () =>{
     } finally {
       dispatch(setIsLoading(false))
     }
-  }
+  },[dispatch])
+
+  useEffect(()=>{
+    getCart()  
+  },[getCart])
 
   // 編輯購物車 單獨產品數量
   async function editCartItem(cart_id,product_id,qty) {
@@ -247,7 +246,6 @@ const CartPage = () =>{
       showSuccessToast(res.data.message)
       setCouponCode("")
       getCart()  
-      setCouponTotal(res.data.data.final_total)
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
     } finally{
@@ -257,18 +255,18 @@ const CartPage = () =>{
 
 
   return(<>
-    <div className="container mt-5">
+    <div className="container cart ">
       <div className='mb-3'>
-      <h1 className="h3">購物車</h1>
+        <h1 className="h3">購物車</h1>
       </div>
 
-      <div className="row">
+      <div className="row ">
         <div className="col-12">
           {toPay ? (
             <div>
               <div className="card">
                 <div className="card-body">
-                  <table className="table mb-5">
+                  <table className="table mb-5 table  cart-table-container" >
                     <thead>
                       <tr>
                         <th scope="col">商品名稱</th>
@@ -280,10 +278,10 @@ const CartPage = () =>{
                     <tbody>
                       {cart.carts?.map((item) => (
                         <tr key={item.product.id}>
-                          <td className="align-content-center" style={{ minWidth: '300px' }}>
+                          <td className="align-content-center">
                             {item.product.title}
                           </td>
-                          <td className="align-content-center" style={{ minWidth: '90px' }}>
+                          <td className="align-content-center" >
                             <div className="d-flex">
                               <span className="text-secondary">$ {item.product.price}</span>
                             </div>
@@ -294,7 +292,7 @@ const CartPage = () =>{
                               <span className="ms-1">{item.product.unit}</span>
                             </span>
                           </td>
-                          <td className="align-content-center" style={{ width: '100px' }}>
+                          <td className="align-content-center">
                             <div className="d-flex justify-content-end">
                               <span className="text-danger">$ {item.total}</span>
                             </div>
@@ -312,7 +310,7 @@ const CartPage = () =>{
                         </td>
                       </tr>
                       {
-                        cart.final_total &&
+                        cart.final_total !== cart.total &&
                         <tr>
                         <td></td>
                         <td></td>
@@ -328,7 +326,7 @@ const CartPage = () =>{
                   </table>
 
                   <div className="mb-5 d-flex justify-content-end align-items-center">
-                    <div className="text-secondary me-3">輸入「666」 限時8折</div>
+                    <div className="text-secondary me-3">輸入「666」<br />限時8折</div>
                     <div className="form-floating me-3">
                       <input
                         type="text"
@@ -348,7 +346,7 @@ const CartPage = () =>{
                   <div className="card-text">
                     <form onSubmit={handleSubmit(onSubmit)}>
                       <div className="row">
-                        <div className="col-6 mb-3">
+                        <div className="col-lg-6 col-12 mb-3">
                           <div className="form-floating">
                             <input
                               type="text"
@@ -366,7 +364,7 @@ const CartPage = () =>{
                           </div>
                         </div>
 
-                        <div className="col-6 mb-3">
+                        <div className="col-lg-6 col-12 mb-3">
                           <div className="form-floating">
                             <input
                               type="tel"
@@ -433,9 +431,9 @@ const CartPage = () =>{
                             <textarea
                               type="text"
                               className={`form-control ${errors['message'] && 'is-invalid'}`}
+                              style={{ height: '120px' }}
                               id="message"
                               placeholder="message"
-                              style={{ height: '100px' }}
                               {...register('message', {
                                 maxLength: {
                                   value: 100,
@@ -476,7 +474,8 @@ const CartPage = () =>{
               </div>
             </div>
           ) : (
-            <div>
+            <>
+            <div className="">
               <table className="table">
                 <thead>
                   <tr>
@@ -493,7 +492,8 @@ const CartPage = () =>{
                 <tbody>
                   {cart.carts?.map((item) => (
                     <tr key={item.product.id}>
-                      <td className="align-content-center">
+                      
+                      <td className="align-content-center ">
                         <button
                           type="button"
                           className="btn btn-sm btn-outline-danger"
@@ -502,7 +502,7 @@ const CartPage = () =>{
                           X
                         </button>
                       </td>
-                      <td className="align-content-center" style={{ width: '200px' }}>
+                      <td className="align-content-center">
                         {item.product.title}
                       </td>
                       <td className="align-content-center">
@@ -535,17 +535,17 @@ const CartPage = () =>{
                       </td>
                       <td className="align-content-center">
                         <div className="d-flex justify-content-end">
-                          <span className="text-secondary" style={{ width: '75px' }}>
+                          <span className="text-secondary" >
                             $ {item.product.price}
                           </span>
                         </div>
                       </td>
                       <td className="align-content-center">
-                        <span className="d-flex text-secondary" style={{ width: '45px' }}>
+                        <span className="d-flex text-secondary" >
                           {item.product.stockQty}
                         </span>
                       </td>
-                      <td className="align-content-center" style={{ width: '100px' }}>
+                      <td className="align-content-center">
                         <div className="d-flex justify-content-end">
                           <span className="text-danger text-end">
                             $ {item.total}
@@ -568,6 +568,8 @@ const CartPage = () =>{
                   </tr>
                   
                 </tbody>
+
+                
               </table>
 
               <button
@@ -585,10 +587,12 @@ const CartPage = () =>{
                 清空購物車
               </button>
             </div>
+            </>
           )}
         </div>
       </div>
     </div>
+    
 
   </>)
 }

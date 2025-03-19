@@ -4,7 +4,7 @@ import { Link, Outlet, useNavigate } from "react-router"
 import { NavLink } from "react-router"
 import { ToastContainer } from 'react-toastify'
 import { setIsLogin } from "./slice/stateReducer"
-import { showDangerToast, showErrorToast, showSuccessToast } from "./utils/toastUtils"
+import { showDangerToast, showSuccessToast } from "./utils/toastUtils"
 import ReactLoading from 'react-loading'
 import { useSelector } from "react-redux"
 
@@ -77,7 +77,6 @@ const AdminLayout = () => {
   <div className="m-3 mt-0">
     <Outlet />
   </div>
-
   <ToastContainer />
 
 
