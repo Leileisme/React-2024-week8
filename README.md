@@ -3,7 +3,7 @@
 
 ## 前往觀看：[有型眼鏡 購物網](https://leileisme.github.io/React-2024-week8/)
 
-以前家就是眼鏡店，但現在只剩眼鏡
+以前家就是眼鏡店，但現在只剩眼鏡，<br>
 想為爸爸打造一個眼鏡購物網站！
 
 ![網站首頁](/public/index-img.png "網站首頁")
