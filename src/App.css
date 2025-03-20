@@ -128,8 +128,8 @@ body {
   }
 }
 
-.outline-margin{
-  margin-top:75px
+.product-detail-margin{
+  margin-top:100px
 }
 
 
@@ -176,6 +176,7 @@ body {
 .product-card-title {
   display: -webkit-box;
   -webkit-line-clamp: 2; /* 限制顯示行數 */
+  line-clamp: 3; /* 添加標準屬性以提高相容性 */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -187,10 +188,6 @@ body {
 
 .aside-list:hover a{
   color:  #0d6efd !important;
-}
-
-.product-modal-container{
-  /* max-width: 1200px !important; */
 }
 
 .product-modal-primary-img{

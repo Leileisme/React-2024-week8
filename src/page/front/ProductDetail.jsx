@@ -18,6 +18,35 @@ const ProductDetail = () => {
   const [productsList,setProductsList]=useState([]) // 產品列表
 
 
+  // 取得購物車列表
+  const getCart = useCallback(async ()  => {
+    dispatch(setIsLoading(true))
+    try {
+      const res = await axios.get(`${api}/v2/api/${path}/cart`)
+      dispatch(setCart(res.data.data))
+      const _cart = res.data.data.carts.map((item)=>{
+        if(item.qty > item.product.stockQty){
+          showDangerToast(`商品${item.product.title}庫存不足，最多只能購買${item.product.stockQty}個`)
+          item.qty = item.product.stockQty
+          editCartItem(item.id,item.product_id,item.product.stockQty)
+        }
+        return item
+      })
+
+      dispatch(
+        setCartItemsQty(
+          _cart.map(cart=>({
+            id: cart.product_id,
+            qty:cart.qty
+          }))
+        )
+      )
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+    } finally {
+      dispatch(setIsLoading(false))
+    }
+  },[dispatch])
 
 
   // 減少商品數量 btn 
@@ -71,35 +100,7 @@ const ProductDetail = () => {
     }
   }
 
-  // 取得購物車列表
-  const getCart = useCallback(async ()  => {
-    dispatch(setIsLoading(true))
-    try {
-      const res = await axios.get(`${api}/v2/api/${path}/cart`)
-      dispatch(setCart(res.data.data))
-      const _cart = res.data.data.carts.map((item)=>{
-        if(item.qty > item.product.stockQty){
-          showDangerToast(`商品${item.product.title}庫存不足，最多只能購買${item.product.stockQty}個`)
-          item.qty = item.product.stockQty
-          editCartItem(item.id,item.product_id,item.product.stockQty)
-        }
-        return item
-      })
 
-      dispatch(
-        setCartItemsQty(
-          _cart.map(cart=>({
-            id: cart.product_id,
-            qty:cart.qty
-          }))
-        )
-      )
-    } catch (error) {
-      showErrorToast(error?.response?.data?.message)
-    } finally {
-      dispatch(setIsLoading(false))
-    }
-  },[dispatch,editCartItem])
 
   // 監聽輸入數量
   function handleCartQtyInputOnChange(e,cart,formCart){
@@ -191,17 +192,7 @@ const ProductDetail = () => {
     }
   },[id])
 
-  useEffect(()=>{
-    if (productDetail.category) {
-      getProductsList(productDetail.category)
-    }
-  },[productDetail,getProductsList])
 
-
-  // 取得購物車
-  useEffect(() => {
-    getCart()
-  }, [getCart])
 
   // 取得單一產品
   async function getProductDetail(id) {
@@ -214,14 +205,14 @@ const ProductDetail = () => {
         ...product,
         imagesUrl:imgsUrl
       })
-
     } catch (error) {
-      console.log(error)
+      showErrorToast(error?.response?.data?.message)
+
     }
   }
 
   // 取的產品列表
-  const getProductsList =(async (category) => {
+  const getProductsList = useCallback(async (category) => {
     dispatch(setIsLoading(true))
     try {
       const res = await axios.get(`${api}/v2/api/${path}/products?&category=${category}`)
@@ -234,11 +225,25 @@ const ProductDetail = () => {
       dispatch(setIsLoading(false))
       
     }
-  },[dispatch])
+  },[dispatch,productDetail.id])
+
+  useEffect(()=>{
+    if (productDetail.category) {
+      getProductsList(productDetail.category)
+    }
+  },[productDetail,getProductsList])
+
+
+  // 取得購物車
+  useEffect(() => {
+    getCart()
+  }, [getCart])
+
+
   
   return(
     <>
-      <div className="container outline-margin">
+      <div className="container product-detail-margin">
         <div className="row">
           <div className="col-12">
             <nav aria-label="breadcrumb">
