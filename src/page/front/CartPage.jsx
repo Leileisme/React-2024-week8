@@ -248,7 +248,6 @@ const CartPage = () =>{
       const res = await axios.post(`${api}/v2/api/${path}/coupon`,{data:{
         code:couponCode
       }})
-      console.log(res.data.data.final_total)
 
       showSuccessToast(res.data.message)
       setCouponCode("")
