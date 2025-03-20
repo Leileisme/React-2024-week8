@@ -54,9 +54,6 @@ const OrderManagement = () => {
     }
   }, [dispatch, navigate])
 
-  useEffect(()=>{
-    getOrders()
-  },[getOrders])
 
   // 取得訂單資訊
   const getOrders = useCallback(async(e,page=1) => {
@@ -230,6 +227,11 @@ const OrderManagement = () => {
       },
     }))
   }
+
+
+  useEffect(()=>{
+    getOrders()
+  },[getOrders])
 
   return(
     <>

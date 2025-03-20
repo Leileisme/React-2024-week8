@@ -184,9 +184,9 @@ const CouponManagement = () => {
       setIsEdit(false)
     }
 
-    useEffect(()=>{
-      getCoupon()
-    },[getCoupon])
+  useEffect(()=>{
+    getCoupon()
+  },[getCoupon])
     
 
     

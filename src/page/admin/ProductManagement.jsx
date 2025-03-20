@@ -56,9 +56,7 @@ const ProductManagement = () => {
   const addModalRef = useRef(null)
   const addModal = useRef(null)
 
-  useEffect(()=>{
-    getProducts()
-  },[getProducts])
+
 
   // 取得產品資訊
   const getProducts = useCallback(async(e,page=1) => {
@@ -141,6 +139,10 @@ const ProductManagement = () => {
       dispatch(setIsLoading(false))
     }
   }
+
+  useEffect(()=>{
+    getProducts()
+  },[getProducts])
 
   return(
     <>
