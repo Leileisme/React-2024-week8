@@ -273,9 +273,9 @@ const CartPage = () =>{
                     <thead>
                       <tr>
                         <th scope="col">商品名稱</th>
-                        <th scope="col">單價</th>
+                        <th scope="col" >單價</th>
                         <th scope="col">數量</th>
-                        <th scope="col" className="text-center">價格</th>
+                        <th scope="col" className="text-end">價格</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -487,7 +487,7 @@ const CartPage = () =>{
                     <th scope="col">數量</th>
                     <th scope="col">單價</th>
                     <th scope="col">庫存</th>
-                    <th scope="col" className="text-center">
+                    <th scope="col" className="text-end">
                       價格
                     </th>
                   </tr>
@@ -537,7 +537,7 @@ const CartPage = () =>{
                         </span>
                       </td>
                       <td className="align-content-center">
-                        <div className="d-flex justify-content-end">
+                        <div className="d-flex ">
                           <span className="text-secondary" >
                             $ {item.product.price}
                           </span>

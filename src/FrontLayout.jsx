@@ -41,6 +41,7 @@ const FrontLayout = () => {
   }
 
   function handleCloseNav() {
+    toggleButtonRef.current = new bootstrap.Collapse(navCollapseRef.current)
     if (toggleButtonRef.current) {
       toggleButtonRef.current.hide()
     }
