@@ -1,5 +1,5 @@
 import axios from "axios"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Link, useParams } from "react-router"
 import { showSuccessToast,showDangerToast,showErrorToast } from '../../utils/toastUtils'
 
@@ -16,7 +16,25 @@ const ProductDetail = () => {
   const { cartQty, cartItemsQty } = useSelector((state) => state.cart)
   const [productDetail,setProductDetail] = useState({})
   const [productsList,setProductsList]=useState([]) // 產品列表
+  const getCartRef = useRef()
 
+  // 編輯購物車 單獨產品數量
+  const editCartItem = (async (cart_id,product_id,qty) => {
+    dispatch(setIsLoading(true))
+    try {
+      await axios.put(`${api}/v2/api/${path}/cart/${cart_id}`,{data:{
+        product_id,
+        qty
+      }})
+      
+      // getCart()
+      getCartRef.current()
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+    }finally {
+      dispatch(setIsLoading(false))
+    }
+  },[dispatch])
 
   // 取得購物車列表
   const getCart = useCallback(async ()  => {
@@ -46,7 +64,7 @@ const ProductDetail = () => {
     } finally {
       dispatch(setIsLoading(false))
     }
-  },[dispatch])
+  },[dispatch,editCartItem])
 
 
   // 減少商品數量 btn 
@@ -66,22 +84,7 @@ const ProductDetail = () => {
     }
   }
 
-  // 編輯購物車 單獨產品數量
-  const editCartItem = (async (cart_id,product_id,qty) => {
-    dispatch(setIsLoading(true))
-    try {
-      await axios.put(`${api}/v2/api/${path}/cart/${cart_id}`,{data:{
-        product_id,
-        qty
-      }})
-      
-      getCart()
-    } catch (error) {
-      showErrorToast(error?.response?.data?.message)
-      dispatch(setIsLoading(false))
 
-    }
-  },[dispatch,getCart])
 
   // 增加商品數量 btn 
   function handleAddCartQty(cart,formCart,productDetail){
@@ -236,7 +239,7 @@ const ProductDetail = () => {
 
   // 取得購物車
   useEffect(() => {
-    getCart()
+    getCartRef.current=getCart
   }, [getCart])
 
 
