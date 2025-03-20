@@ -1,7 +1,7 @@
 
 import { useNavigate } from "react-router"
 import { useDispatch } from "react-redux"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { showDangerToast,showErrorToast,showSuccessToast } from "../../utils/toastUtils"
 import { checkLogin, getTokenFromCookies } from "../../utils/authUtils"
 import { setIsLoading } from "../../slice/cartReducer"
@@ -52,10 +52,7 @@ const CouponManagement = () => {
     }
   }, [dispatch, navigate])
 
-  useEffect(()=>{
-    getCoupon()
-  },[])
-  
+
   const openAddModal = (item) =>{
     if(item) {
       setCoupon(item)
@@ -122,7 +119,7 @@ const CouponManagement = () => {
   }
 
   // 取得產品列表
-  async function getCoupon() {
+  const getCoupon = useCallback(async() => {
     dispatch(setIsLoading(true))
     try {
       const res = await axios.get(`${api}/v2/api/${path}/admin/coupons`)
@@ -138,7 +135,7 @@ const CouponManagement = () => {
     } finally {
       dispatch(setIsLoading(false))
     }
-  }
+  },[dispatch])
 
     // 關閉確認 modal
     const closeModal = () => {
@@ -186,6 +183,11 @@ const CouponManagement = () => {
       })
       setIsEdit(false)
     }
+
+    useEffect(()=>{
+      getCoupon()
+    },[getCoupon])
+    
 
     
   return(

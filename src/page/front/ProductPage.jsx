@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { showSuccessToast, showErrorToast } from '../../utils/toastUtils'
 import Pagination from '../../component/Pagination'
 import ProductList from '../../component/ProductList'
@@ -25,7 +25,7 @@ const ProductPage = () => {
   }
 
   // 取的產品列表
-  async function getProductsList(page = 1,category=null) {
+  const getProductsList = useCallback(async (page = 1,category=null) => {
     dispatch(setIsLoading(true))
     try {
       const res = await axios.get(
@@ -42,7 +42,7 @@ const ProductPage = () => {
       dispatch(setIsLoading(false))
       
     }
-  }
+  },[dispatch])
 
   // 加入購物車
   async function addCartItem(product_id,qty) {
@@ -80,7 +80,7 @@ const ProductPage = () => {
   useEffect(()=>{
     getProductsList()
     getCart()
-  },[])
+  },[getProductsList])
 
   // 監聽商品換頁
   function handlePageClick(e,page){

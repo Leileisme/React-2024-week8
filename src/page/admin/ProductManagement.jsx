@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { useDispatch } from "react-redux"
 import { showSuccessToast,showDangerToast, showErrorToast } from '../../utils/toastUtils'
 import { checkLogin, getTokenFromCookies } from "../../utils/authUtils"
@@ -58,10 +58,10 @@ const ProductManagement = () => {
 
   useEffect(()=>{
     getProducts()
-  },[])
+  },[getProducts])
 
   // 取得產品資訊
-  async function getProducts(e,page=1) {
+  const getProducts = useCallback(async(e,page=1) => {
     dispatch(setIsLoading(true))
     if(e){
       e.preventDefault()
@@ -75,7 +75,7 @@ const ProductManagement = () => {
     } finally {
       dispatch(setIsLoading(false))
     }
-  }
+  },[dispatch])
 
 
   // 產品編輯跳窗

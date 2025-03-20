@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router"
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from "react-redux"
 import { showSuccessToast , showDangerToast, showErrorToast } from '../../utils/toastUtils' 
 import { checkLogin, getTokenFromCookies } from "../../utils/authUtils"
@@ -56,10 +56,10 @@ const OrderManagement = () => {
 
   useEffect(()=>{
     getOrders()
-  },[])
+  },[getOrders])
 
   // 取得訂單資訊
-  async function getOrders(e,page=1) {
+  const getOrders = useCallback(async(e,page=1) => {
     dispatch(setIsLoading(true))
     if(e){
       e.preventDefault()
@@ -76,7 +76,7 @@ const OrderManagement = () => {
     } finally {
       dispatch(setIsLoading(false))
     }
-  }
+  },[dispatch])
 
   // 訂單詳情
   function openOrderDetailModal(order) {

@@ -22,7 +22,7 @@ const CartPage = () =>{
 
 
   // 取得購物車列表
-  const getCart=useCallback(async() =>  {
+  const getCart = useCallback(async() =>  {
     dispatch(setIsLoading(true))
     
     try {
@@ -50,14 +50,14 @@ const CartPage = () =>{
     } finally {
       dispatch(setIsLoading(false))
     }
-  },[dispatch])
+  },[dispatch,editCartItem])
 
   useEffect(()=>{
     getCart()  
   },[getCart])
 
   // 編輯購物車 單獨產品數量
-  async function editCartItem(cart_id,product_id,qty) {
+  const editCartItem = useCallback( async(cart_id,product_id,qty) => {
     dispatch(setIsLoading(true))
     try {
       await axios.put(`${api}/v2/api/${path}/cart/${cart_id}`,{data:{
@@ -70,7 +70,7 @@ const CartPage = () =>{
       showErrorToast(error?.response?.data?.message)
       dispatch(setIsLoading(false))
     }
-  }
+  },[dispatch,getCart])
   
 
   // 購物車 的 商品們數量

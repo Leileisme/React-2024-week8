@@ -1,5 +1,5 @@
 import axios from "axios"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Link, useParams } from "react-router"
 import { showSuccessToast,showDangerToast,showErrorToast } from '../../utils/toastUtils'
 
@@ -19,10 +19,6 @@ const ProductDetail = () => {
 
 
 
-  // 取得購物車
-  useEffect(() => {
-    getCart()
-  }, [])
 
   // 減少商品數量 btn 
   function handleReduceCartQty(cart,formCart){
@@ -42,7 +38,7 @@ const ProductDetail = () => {
   }
 
   // 編輯購物車 單獨產品數量
-  async function editCartItem(cart_id,product_id,qty) {
+  const editCartItem = (async (cart_id,product_id,qty) => {
     dispatch(setIsLoading(true))
     try {
       await axios.put(`${api}/v2/api/${path}/cart/${cart_id}`,{data:{
@@ -56,7 +52,7 @@ const ProductDetail = () => {
       dispatch(setIsLoading(false))
 
     }
-  }
+  },[dispatch,getCart])
 
   // 增加商品數量 btn 
   function handleAddCartQty(cart,formCart,productDetail){
@@ -76,7 +72,7 @@ const ProductDetail = () => {
   }
 
   // 取得購物車列表
-  async function getCart() {
+  const getCart = useCallback(async ()  => {
     dispatch(setIsLoading(true))
     try {
       const res = await axios.get(`${api}/v2/api/${path}/cart`)
@@ -103,7 +99,7 @@ const ProductDetail = () => {
     } finally {
       dispatch(setIsLoading(false))
     }
-  }
+  },[dispatch,editCartItem])
 
   // 監聽輸入數量
   function handleCartQtyInputOnChange(e,cart,formCart){
@@ -199,7 +195,13 @@ const ProductDetail = () => {
     if (productDetail.category) {
       getProductsList(productDetail.category)
     }
-  },[productDetail])
+  },[productDetail,getProductsList])
+
+
+  // 取得購物車
+  useEffect(() => {
+    getCart()
+  }, [getCart])
 
   // 取得單一產品
   async function getProductDetail(id) {
@@ -219,7 +221,7 @@ const ProductDetail = () => {
   }
 
   // 取的產品列表
-  async function getProductsList(category) {
+  const getProductsList =(async (category) => {
     dispatch(setIsLoading(true))
     try {
       const res = await axios.get(`${api}/v2/api/${path}/products?&category=${category}`)
@@ -232,7 +234,8 @@ const ProductDetail = () => {
       dispatch(setIsLoading(false))
       
     }
-  }
+  },[dispatch])
+  
   return(
     <>
       <div className="container outline-margin">
