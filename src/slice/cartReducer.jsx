@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { showSuccessToast,showDangerToast,showErrorToast } from '../utils/toastUtils'
+import { showDangerToast,showErrorToast } from '../utils/toastUtils'
 
 const api = import.meta.env.VITE_BASE_URL
 const path = import.meta.env.VITE_API_PATH
@@ -77,7 +77,7 @@ export const handleAddCartItem = createAsyncThunk(
       const currentQty = existingItem ? existingItem.qty : 0;
       const maxQty = productDetail.stockQty;
 
-      let purchaseQty = isDetail ? Number(cartQty) : 1;
+      let purchaseQty = isDetail ? Number(state.cartQty) : 1;
       const totalQty = currentQty + purchaseQty;
 
       if (totalQty > maxQty) {
