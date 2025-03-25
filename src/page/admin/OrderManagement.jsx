@@ -63,12 +63,9 @@ const OrderManagement = () => {
     }
     try {
       const res =  await axios.get(`${api}/v2/api/${path}/admin/orders?page=${page}`)
-      // console.log('getOrders',res)
-      
       setOrders(res.data.orders)
       setPagination(res.data.pagination)
     } catch (error) {
-      // console.log(error)
       showErrorToast(error?.response?.data?.message)
     } finally {
       dispatch(setIsLoading(false))
@@ -80,8 +77,7 @@ const OrderManagement = () => {
     dispatch(setIsLoading(true))
     const productsArray = Object.values(order.products)
     setProductDetails(productsArray)
-    // console.log(productsArray)
-    
+
     setOrder({
       id: order.id || "",
       paid_date: order.paid_date || "",
@@ -118,11 +114,11 @@ const OrderManagement = () => {
   async function editOrder(){
     dispatch(setIsLoading(true))
     try {
-    const res = await axios.post(`${api}/v2/api/${path}/pay/${modalPaymentState.id}`)
-    showSuccessToast(res.data.message)
-    getOrders()
-    setModalPaymentState({})
-    isConfirmModal.current.hide()
+      const res = await axios.post(`${api}/v2/api/${path}/pay/${modalPaymentState.id}`)
+      showSuccessToast(res.data.message)
+      getOrders()
+      setModalPaymentState({})
+      isConfirmModal.current.hide()
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
     } finally {
@@ -144,11 +140,11 @@ const OrderManagement = () => {
   async function deleteOrder(id){
     dispatch(setIsLoading(true))
     try {   
-    const res = await axios.delete(`${api}/v2/api/${path}/admin/order/${id}`)
-    showSuccessToast(res.data.message)
-    setModalDeleteOrder({})
-    getOrders()
-    isConfirmModal.current.hide()
+      const res = await axios.delete(`${api}/v2/api/${path}/admin/order/${id}`)
+      showSuccessToast(res.data.message)
+      setModalDeleteOrder({})
+      getOrders()
+      isConfirmModal.current.hide()
     } catch (error) {
       console.error(error)
       showErrorToast(error?.response?.data?.message)
@@ -208,7 +204,6 @@ const OrderManagement = () => {
       getOrders()
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
-      // console.log(error)
     } finally {
       setIsSubmitting(false)
       dispatch(setIsLoading(false))
@@ -227,7 +222,6 @@ const OrderManagement = () => {
       },
     }))
   }
-
 
   useEffect(()=>{
     getOrders()
@@ -259,20 +253,19 @@ const OrderManagement = () => {
                 <tr key={index}>
                   <td>{item.create_at}</td>
                   <td>
-                  {item.is_paid 
-                  ?
-                    <div className='badge bg-secondary fw-bold'>
-                    已付款
-                    </div>
-                  :
-                  (
-                    <>
-                    <span className='badge bg-danger fw-bold me-2'>
-                    未付款
-                    </span >
-                  </>
-                  )
-                  }
+                    {
+                      item.is_paid 
+                      ?
+                      <div className='badge bg-secondary fw-bold'>
+                      已付款
+                      </div>
+                      :
+                      (
+                        <span className='badge bg-danger fw-bold me-2'>
+                        未付款
+                        </span >
+                      )
+                    }
                   </td>
 
                   <td>{item.total}</td>
@@ -284,23 +277,18 @@ const OrderManagement = () => {
 
 
                   <td>
-                  <div className="btn-group" role="group" aria-label="Basic example">
-                    <button type='button'
-                    className='btn btn-outline-secondary'
-                    onClick={()=>{openOrderDetailModal(item)}}>查看</button>
-                    <button 
-                    type='button' 
-                    className= {`btn btn-outline-primary ${item.is_paid ? 'disabled' : ''}` } 
-                    onClick={() => handlePaymentState(item)}>
-                    修改付款狀態
-                    </button >
-                    <button type='button'
-                    className='btn btn-outline-danger ' 
-                    onClick={()=> handleDeleteOrder(item)}
-                    >刪除</button>
-                  </div>
-
-                    
+                    <div className="btn-group" role="group" aria-label="Basic example">
+                      <button type='button'
+                        className='btn btn-outline-secondary'
+                        onClick={()=>{openOrderDetailModal(item)}}>查看</button>
+                      <button 
+                        type='button' 
+                        className= {`btn btn-outline-primary ${item.is_paid ? 'disabled' : ''}` } 
+                        onClick={() => handlePaymentState(item)}>修改付款狀態</button >
+                      <button type='button'
+                        className='btn btn-outline-danger ' 
+                        onClick={()=> handleDeleteOrder(item)}>刪除</button>
+                    </div>
                   </td>
 
                   <td>
@@ -308,14 +296,13 @@ const OrderManagement = () => {
                       <div className="modal-dialog">
                         <div className="modal-content">
                           <div className="modal-header">
-                          {
-                            modalDeleteOrder?.id // 如果有刪除的訂單資料，顯示刪除訊息
-                            ? 
-                            <h5 className="modal-title">確定刪除「 訂單 <span className='text-danger'> {modalDeleteOrder.create_at}</span> 」?</h5>
-                            : 
-                            <h5 className="modal-title">確定 「訂單 <span className='text-danger'> {modalPaymentState?.create_at}</span> 」 已付款?</h5>
-                          }
-                            
+                            {
+                              modalDeleteOrder?.id // 如果有刪除的訂單資料，顯示刪除訊息
+                              ? 
+                              <h5 className="modal-title">確定刪除「 訂單 <span className='text-danger'> {modalDeleteOrder.create_at}</span> 」?</h5>
+                              : 
+                              <h5 className="modal-title">確定 「訂單 <span className='text-danger'> {modalPaymentState?.create_at}</span> 」 已付款?</h5>
+                            }
                           </div>
                           <div className="modal-body">
                             <p>這個操作將無法撤銷，確定這麼做嗎？</p>
@@ -324,107 +311,99 @@ const OrderManagement = () => {
                             <button
                               type="button"
                               className="btn btn-secondary"
-                              onClick={closeModal}
-                            >
-                              取消
-                            </button>
+                              onClick={closeModal}>取消</button>
                             <button
                               type="button"
                               className="btn btn-danger"
                               onClick={() => {
                                 modalDeleteOrder?.id ?  deleteOrder(modalDeleteOrder.id) : editOrder(item) 
                                 closeModal()  // 刪除後關閉 Modal
-                              }}
-                            >確定
-                            </button>
+                              }}>確定</button>
                           </div>
                         </div>
                       </div>
                     </div>
                   </td>
                 </tr>
-
               ))
             }
           </tbody>
         </table>
       </div>
       <div className="modal  fade" ref={editModalRef} tabIndex="-1" data-bs-backdrop="static" >
-            <div className="modal-dialog modal-lg">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h1 className="modal-title fs-5" id="exampleModalLabel">編輯訂單「{order.create_at}」</h1>
-                  <button type="button" className="btn-close" data-bs-dismiss="modal" onClick={()=>{handleCancel()}}></button>
-                </div>
-                <form onSubmit={handleSubmit}>
-                  <div className="modal-body">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="exampleModalLabel">編輯訂單「{order.create_at}」</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" onClick={()=>{handleCancel()}}></button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-12">
                     <div className="row">
+                      <h6 className="col-12 mb-6">訂購人資訊</h6>
+                      <div className="col-6 mb-3">
+                        <label htmlFor="name" className='form-label'>姓名</label>
+                        <input type="text" id="name" className='form-control form-control-sm' name='name' value={order?.user?.name || ''} onChange={(e)=> handleOrderChange(e)}/>
+                      </div>
+
+                      <div className="col-6 mb-3">
+                        <label htmlFor="address" className='form-label'>地址</label>
+                        <input type="text" min="0" id="address" className='form-control form-control-sm' name='address' value={order?.user?.address || ''} onChange={(e)=> handleOrderChange(e)}/>
+                      </div>
+
+                      <div className="col-6 mb-3">
+                        <label htmlFor="email" className='form-label'>email</label>
+                        <input type="email" id="email" className='form-control form-control-sm' name='email' value={order?.user?.email || ''}  onChange={(e)=> handleOrderChange(e)}/>
+                      </div>
+
+                      <div className="col-6 mb-3">
+                        <label htmlFor="tel" className='form-label'>手機</label>
+                        <input type="tel" id="tel" className='form-control form-control-sm' name='tel' value={order?.user?.tel || ""} min="0" onChange={(e)=> handleOrderChange(e)}/>
+                      </div>
+                      <h6 className="col-12 mt-3">訂購產品</h6>
                       <div className="col-12">
-                        <div className="row">
-                          <h6 className="col-12 mb-6">訂購人資訊</h6>
-                          <div className="col-6 mb-3">
-                              <label htmlFor="name" className='form-label'>姓名</label>
-                              <input type="text" id="name" className='form-control form-control-sm' name='name' value={order?.user?.name || ''} onChange={(e)=> handleOrderChange(e)}/>
-                          </div>
-
-                          <div className="col-6 mb-3">
-                              <label htmlFor="address" className='form-label'>地址</label>
-                              <input type="text" min="0" id="address" className='form-control form-control-sm' name='address' value={order?.user?.address || ''} onChange={(e)=> handleOrderChange(e)}/>
-                          </div>
-
-                          <div className="col-6 mb-3">
-                              <label htmlFor="email" className='form-label'>email</label>
-                              <input type="email" id="email" className='form-control form-control-sm' name='email' value={order?.user?.email || ''}  onChange={(e)=> handleOrderChange(e)}/>
-                          </div>
-
-                          <div className="col-6 mb-3">
-                              <label htmlFor="tel" className='form-label'>手機</label>
-                              <input type="tel" id="tel" className='form-control form-control-sm' name='tel' value={order?.user?.tel || ""} min="0" onChange={(e)=> handleOrderChange(e)}/>
-                          </div>
-                          <h6 className="col-12 mt-3">訂購產品</h6>
-                          <div className="col-12">
-                            <table className='table'>
-                              <thead>
-                                <tr>
-                                  <th className="text-bg-secondary">商品名稱</th>
-                                  <th className="text-bg-secondary">商品單價</th>
-                                  <th className="text-bg-secondary">訂單數量</th>
-                                  <th className="text-bg-secondary">總額</th>
+                        <table className='table'>
+                          <thead>
+                            <tr>
+                              <th className="text-bg-secondary">商品名稱</th>
+                              <th className="text-bg-secondary">商品單價</th>
+                              <th className="text-bg-secondary">訂單數量</th>
+                              <th className="text-bg-secondary">總額</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {
+                              productDetails.length > 0 && Object.values(productDetails).map((item)=>(
+                                <tr key={item.id}>
+                                  <td>{item?.product?.title}</td>
+                                  <td>{item?.product?.price}</td>
+                                  <td>{item.qty}</td>
+                                  <td>{item.total}</td>
                                 </tr>
-                              </thead>
-                              <tbody>
-                              {
-                                productDetails.length > 0 && Object.values(productDetails).map((item)=>(
-                                  <tr key={item.id}>
-                                    <td>{item?.product?.title}</td>
-                                    <td>{item?.product?.price}</td>
-                                    <td>{item.qty}</td>
-                                    <td>{item.total}</td>
-                                  </tr>
-                                )) 
-                              }
-                              <tr>
-                                <td>{}</td>
-                                <td>{}</td>
-                                <th>訂單總額</th>
-                                <td className="text-danger">{order?.total}</td>
-                              </tr>
-                              </tbody>
-                            </table>
-                          </div>
-
-                          
-                        </div>
+                              )) 
+                            }
+                          <tr>
+                            <td>{}</td>
+                            <td>{}</td>
+                            <th>訂單總額</th>
+                            <td className="text-danger">{order?.total}</td>
+                          </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   </div>
-                  <div className="modal-footer">
-                    <button type="button"className="btn btn-secondary " onClick={()=>{handleCancel()}}>取消</button>
-                    <button type="submit" className="btn btn-primary">確認</button>
-                  </div>
-                </form>
+                </div>
               </div>
-            </div>
+              <div className="modal-footer">
+                <button type="button"className="btn btn-secondary " onClick={()=>{handleCancel()}}>取消</button>
+                <button type="submit" className="btn btn-primary">確認</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
 
       <Pagination pagination={pagination} getOrders={getOrders} type={'getOrders'}  />

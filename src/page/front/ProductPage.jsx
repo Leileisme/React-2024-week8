@@ -21,7 +21,7 @@ const ProductPage = () => {
 
   // 新增商品到購物車
   const handleAddCartItem = (productId, qty) => {
-    dispatch(addCartItem({ productId, qty }))
+    addCartItem({ productId, qty })
   }
 
   // 取的產品列表
@@ -104,10 +104,8 @@ const ProductPage = () => {
                 type="button" 
                 className={`btn btn-outline-primary select-list-type ps-2 pe-2 ${isList ? "active" : ""} align-items-center d-flex`}
                 style={{height:"25px",fontSize:"1rem"}}
-                onClick={()=> setIsList(true)}
-                >
-                <i className="bi bi-justify" 
-                ></i>
+                onClick={()=> setIsList(true)}>
+                <i className="bi bi-justify" ></i>
               </button>
               <button
                 type="button"
@@ -121,44 +119,39 @@ const ProductPage = () => {
         </div>
     
         <aside className="col-12 col-lg-2">
-        {/* 大於 lg 時顯示列表 */}
-        <ul className="list-group d-none d-lg-block mt-3">
-          {productCategory.map((category) => (
-            <li className="list-group-item aside-list" key={category}>
-              <a
-                onClick={(e) => handleCategoryClick(e, category)}
-                href="#"
-                className="text-decoration-none text-dark"
-              >
-                {category}
-              </a>
-            </li>
-          ))}
-        </ul>
+          {/* 大於 lg 時顯示列表 */}
+          <ul className="list-group d-none d-lg-block mt-3">
+            {productCategory.map((category) => (
+              <li className="list-group-item aside-list" key={category}>
+                <a
+                  onClick={(e) => handleCategoryClick(e, category)}
+                  href="#"
+                  className="text-decoration-none text-dark">{category}</a>
+              </li>
+            ))}
+          </ul>
 
-        {/* 小於 lg 時顯示下拉選單 */}
-        <div className="d-block d-lg-none ">
-          <div className="form-floating">
-            <select
-              id="categorySelect"
-              className="form-select"
-              onChange={(e) => handleCategoryClick(e, e.target.value)}
+          {/* 小於 lg 時顯示下拉選單 */}
+          <div className="d-block d-lg-none ">
+            <div className="form-floating">
+              <select
+                id="categorySelect"
+                className="form-select"
+                onChange={(e) => handleCategoryClick(e, e.target.value)}
               >
-              {productCategory.map((category) => (
-                <option key={category} value={selectedCategory} // 綁定選擇的分類
-                onChange={(e) => handleCategoryClick(e, e.target.value)} >
-                  {category}
-                </option>
-              ))}
-            </select>
-            <label htmlFor="categorySelect" className="form-label">分類篩選</label>
+                {productCategory.map((category) => (
+                  <option key={category} value={selectedCategory} // 綁定選擇的分類
+                    onChange={(e) => handleCategoryClick(e, e.target.value)} >
+                    {category}
+                  </option>
+                ))}
+              </select>
+              <label htmlFor="categorySelect" className="form-label">分類篩選</label>
+            </div>
           </div>
-        </div>
       </aside>
 
-
         <div className="col-lg-10 col-12 mt-4">
-
           {
             isList 
             ?

@@ -8,17 +8,17 @@ const path = import.meta.env.VITE_API_PATH
 // 取得購物車列表
 export const getCart = createAsyncThunk('cart/getCart', async (_, { dispatch }) => {
   try {
-    const res = await axios.get(`${api}/v2/api/${path}/cart`);
-    const cartData = res.data.data;
+    const res = await axios.get(`${api}/v2/api/${path}/cart`)
+    const cartData = res.data.data
 
     // 檢查庫存數量
     const updatedCart = cartData.carts.map((item) => {
       if (item.qty > item.product.stockQty) {
-        showDangerToast(`商品 ${item.product.title} 庫存不足，最多只能購買 ${item.product.stockQty} 個`);
-        dispatch(editCartItem({ cartId: item.id, productId: item.product_id, qty: item.product.stockQty }));
-        return { ...item, qty: item.product.stockQty };
+        showDangerToast(`商品 ${item.product.title} 庫存不足，最多只能購買 ${item.product.stockQty} 個`)
+        dispatch(editCartItem({ cartId: item.id, productId: item.product_id, qty: item.product.stockQty }))
+        return { ...item, qty: item.product.stockQty }
       }
-      return item;
+      return item
     });
 
     return {
@@ -30,24 +30,24 @@ export const getCart = createAsyncThunk('cart/getCart', async (_, { dispatch }) 
       
     };
   } catch (error) {
-    showErrorToast(error?.response?.data?.message);
-    throw error;
+    showErrorToast(error?.response?.data?.message)
+    throw error
   }
-});
+})
 
 // 修改購物車數量
 export const editCartItem = createAsyncThunk(
   'cart/editCartItem',
   async ({ cartId, productId, qty }, { rejectWithValue }) => {
     try {
-      await axios.put(`${api}/v2/api/${path}/cart/${cartId}`, { product_id: productId, qty });
-      return { cartId, productId, qty };
+      await axios.put(`${api}/v2/api/${path}/cart/${cartId}`, { product_id: productId, qty })
+      return { cartId, productId, qty }
     } catch (error) {
-      showErrorToast(error?.response?.data?.message);
-      return rejectWithValue(error?.response?.data?.message);
+      showErrorToast(error?.response?.data?.message)
+      return rejectWithValue(error?.response?.data?.message)
     }
   }
-);
+)
 
 // 新增商品到購物車
 export const addCartItem = createAsyncThunk(
@@ -60,8 +60,6 @@ export const addCartItem = createAsyncThunk(
       return { productId, qty }
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
-      console.log(error)
-      
       return rejectWithValue(error?.response?.data?.message)
     }
   }
@@ -73,25 +71,24 @@ export const handleAddCartItem = createAsyncThunk(
   async ({ productId, isDetail, productDetail}, { getState, dispatch, rejectWithValue }) => {
     try {
       const state = getState().cart;
-      const existingItem = state.cartItemsQty.find((item) => item.id === productId);
+      const existingItem = state.cartItemsQty.find((item) => item.id === productId)
       const currentQty = existingItem ? existingItem.qty : 0;
-      const maxQty = productDetail.stockQty;
+      const maxQty = productDetail.stockQty
 
-      let purchaseQty = isDetail ? Number(state.cartQty) : 1;
-      const totalQty = currentQty + purchaseQty;
+      let purchaseQty = isDetail ? Number(state.cartQty) : 1
+      const totalQty = currentQty + purchaseQty
 
       if (totalQty > maxQty) {
         purchaseQty = maxQty - currentQty;
-        showDangerToast(`商品 ${productDetail.title} 庫存不足，最多只能購買 ${maxQty} 個`);
+        showDangerToast(`商品 ${productDetail.title} 庫存不足，最多只能購買 ${maxQty} 個`)
       }
 
       if (purchaseQty > 0) {
-        await dispatch(addCartItem({ productId, qty: purchaseQty }));
+        await dispatch(addCartItem({ productId, qty: purchaseQty }))
       }
-
-      return { productId, purchaseQty };
+      return { productId, purchaseQty }
     } catch (error) {
-      return rejectWithValue(error?.response?.data?.message);
+      return rejectWithValue(error?.response?.data?.message)
     }
   }
 )
@@ -101,7 +98,7 @@ export const handleAddCartItem = createAsyncThunk(
 export const setProductDetail = createAsyncThunk(
   'cart/setProductDetail',
   async (productDetail) => productDetail
-);
+)
 
 // 購物車 Slice
 const cartSlice = createSlice({
@@ -200,45 +197,45 @@ const cartSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getCart.pending, (state) => {
-        state.isLoading = true;
+        state.isLoading = true
       })
       .addCase(getCart.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isLoading = false
         state.cart = action.payload.cart;
         state.cartItemsQty = action.payload.cartItemsQty;
       })
       .addCase(getCart.rejected, (state) => {
-        state.isLoading = false;
+        state.isLoading = false
       })
       .addCase(editCartItem.fulfilled, (state, action) => {
-        const { productId, qty } = action.payload;
+        const { productId, qty } = action.payload
         state.cartItemsQty = state.cartItemsQty.map((item) =>
           item.id === productId ? { ...item, qty } : item
-        );
+        )
       })
       .addCase(addCartItem.fulfilled, (state, action) => {
-        const { productId, qty } = action.payload;
-        const existingItem = state.cartItemsQty.find((item) => item.id === productId);
+        const { productId, qty } = action.payload
+        const existingItem = state.cartItemsQty.find((item) => item.id === productId)
         if (existingItem) {
-          existingItem.qty += qty;
+          existingItem.qty += qty
         } else {
-          state.cartItemsQty.push({ id: productId, qty });
+          state.cartItemsQty.push({ id: productId, qty })
         }
       })
       .addCase(setProductDetail.fulfilled, (state, action) => {
-        state.productDetail = action.payload;
+        state.productDetail = action.payload
       })
       .addCase(handleAddCartItem.fulfilled, (state, action) => {
-        const { productId, purchaseQty } = action.payload;
+        const { productId, purchaseQty } = action.payload
         const existingItem = state.cartItemsQty.find((item) => item.id === productId);
         if (existingItem) {
-          existingItem.qty += purchaseQty;
+          existingItem.qty += purchaseQty
         } else {
-          state.cartItemsQty.push({ id: productId, qty: purchaseQty });
+          state.cartItemsQty.push({ id: productId, qty: purchaseQty })
         }
-      });
+      })
   },
-});
+})
 
 export const {
   setCartQty,
@@ -249,6 +246,6 @@ export const {
   handleCartQtyInputOnChange,
   handleCartQtyInputOnBlur,
   // handleAddCartItem,
-} = cartSlice.actions;
+} = cartSlice.actions
 
-export default cartSlice.reducer;
+export default cartSlice.reducer

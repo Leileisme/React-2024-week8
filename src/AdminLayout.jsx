@@ -7,7 +7,8 @@ import { setIsLogin } from "./slice/stateReducer"
 import { showDangerToast, showSuccessToast } from "./utils/toastUtils"
 import ReactLoading from 'react-loading'
 import { useSelector } from "react-redux"
-
+// import { useEffect } from "react"
+// import { checkLogin,getTokenFromCookies } from "../src/utils/authUtils"
 
 
 
@@ -32,6 +33,22 @@ const AdminLayout = () => {
     }
   ]
   const dispatch = useDispatch()
+
+  //  驗證登入
+  // useEffect(() => {
+  //   const token = getTokenFromCookies()
+
+  //   if (token) {
+  //     axios.defaults.headers.common.Authorization = token
+  //     checkLogin(dispatch).catch(() => { // 抓住 authUtils.jsx 拋出的錯誤
+  //       navigate("/login") 
+  //     })
+  //   } else {
+  //     showDangerToast("Token not found")
+  //     navigate("/login")
+  //   }
+  // }, [dispatch, navigate])
+
 
   async function handleLogout() {
     try {

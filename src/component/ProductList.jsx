@@ -149,17 +149,13 @@ return(
                     type="button"
                     className="btn btn-sm btn-outline-secondary"
                     onClick={() => handleClickProduct(product.id)}
-                  >
-                    查看詳情
-                  </button>
+                  >查看詳情</button>
 
                   <button
                     type="button"
                     className="btn btn-sm btn-primary"
                     onClick={() => handleAddCartItem(product.id, false)}
-                  >
-                    加入購物車
-                  </button>
+                  >加入購物車</button>
                 </div>
               </td>
             </tr>
@@ -195,17 +191,13 @@ return(
                 type="button"
                 className="btn btn-sm btn-outline-secondary flex-grow-1"
                 onClick={() => handleClickProduct(product.id)}
-              >
-                查看詳情
-              </button>
+              >查看詳情</button>
 
               <button
                 type="button"
                 className="btn btn-sm btn-primary flex-grow-1"
                 onClick={() => handleAddCartItem(product.id, false)}
-              >
-                加入購物車
-              </button>
+              >加入購物車</button>
             </div>
             </div>
           </div>

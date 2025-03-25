@@ -35,8 +35,6 @@ const CouponManagement = () => {
 
 
 
-
-
   //  驗證登入
   useEffect(() => {
     const token = getTokenFromCookies()
@@ -96,8 +94,6 @@ const CouponManagement = () => {
       getCoupon()
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
-      // console.log(error)
-      
     } finally {
       setIsSubmitting(false)
       dispatch(setIsLoading(false))
@@ -130,30 +126,27 @@ const CouponManagement = () => {
       setCoupons(upDated)
       setPagination(res.data.pagination)
     } catch (error) {
-      // console.log(error)
       showErrorToast(error?.response?.data?.message)
     } finally {
       dispatch(setIsLoading(false))
     }
   },[dispatch])
 
-    // 關閉確認 modal
-    const closeModal = () => {
-      isConfirmModal.current.hide()
-      setModalDeleteCoupon({})
-    }
+  // 關閉確認 modal
+  const closeModal = () => {
+    isConfirmModal.current.hide()
+    setModalDeleteCoupon({})
+  }
 
   // 刪除訂單API
-  async function deleteCoupon(id){
-    // console.log(id)
-    
+  async function deleteCoupon(id){    
     dispatch(setIsLoading(true))
     try {   
-    const res = await axios.delete(`${api}/v2/api/${path}/admin/coupon/${id}`)
-    showSuccessToast(res.data.message)
-    setModalDeleteCoupon({})
-    getCoupon()
-    isConfirmModal.current.hide()
+      const res = await axios.delete(`${api}/v2/api/${path}/admin/coupon/${id}`)
+      showSuccessToast(res.data.message)
+      setModalDeleteCoupon({})
+      getCoupon()
+      isConfirmModal.current.hide()
     } catch (error) {
       console.error(error)
       showErrorToast(error?.response?.data?.message)
@@ -162,33 +155,31 @@ const CouponManagement = () => {
     }
   }
 
-    // 開啟確認 modal（刪除訂單）
-    function handleDeleteCoupon(item){
-      setModalDeleteCoupon({
-        id: item.id,
-        title: item.title
-      })  // 設定要開啟 Modal 的產品 id
-      isConfirmModal.current = new bootstrap.Modal(isConfirmModalRef.current)
-      isConfirmModal.current.show()
-    }
+  // 開啟確認 modal（刪除訂單）
+  function handleDeleteCoupon(item){
+    setModalDeleteCoupon({
+      id: item.id,
+      title: item.title
+    })  // 設定要開啟 Modal 的產品 id
+    isConfirmModal.current = new bootstrap.Modal(isConfirmModalRef.current)
+    isConfirmModal.current.show()
+  }
 
-    function handleCancel (){
-      addModal.current.hide()
-      setCoupon({
-        title: "",
-        is_enabled: 0,
-        percent: "",
-        due_date: "",
-        code: "" 
-      })
-      setIsEdit(false)
-    }
+  function handleCancel (){
+    addModal.current.hide()
+    setCoupon({
+      title: "",
+      is_enabled: 0,
+      percent: "",
+      due_date: "",
+      code: "" 
+    })
+    setIsEdit(false)
+  }
 
   useEffect(()=>{
     getCoupon()
   },[getCoupon])
-    
-
     
   return(
     <>

@@ -130,7 +130,6 @@ const ProductManagement = () => {
     try {
       await axios.delete(`${api}/v2/api/${path}/admin/product/${id}`)
       getProducts(e,pagination.current_page)
-      
       showSuccessToast('刪除成功')
       setIsSubmittingDelete(false)
     } catch (error) {
@@ -176,7 +175,6 @@ const ProductManagement = () => {
 
         <Pagination pagination={pagination} getProducts={getProducts} type={'getProducts'} />
       </div>
-
     </>
   )
 }

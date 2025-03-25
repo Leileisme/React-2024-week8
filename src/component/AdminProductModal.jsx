@@ -44,12 +44,11 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
         tags:[],
         stockQty: 0
       })
-    addModal.current.hide()
-    setIsEdit(false)
-    fileInputRef.current.value = ''
+      addModal.current.hide()
+      setIsEdit(false)
+      fileInputRef.current.value = ''
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
-      console.log(error)
     } finally {
       setIsSubmitting(false)
     }
@@ -78,11 +77,11 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
   // 移除指定位置副圖
   function removeImagesUrl(idx){
     setProduct((pre)=>{
-    const upDated = pre.imagesUrl.filter((_,i)=> i !== idx)
-    return{
-      ...pre,
-      imagesUrl: upDated.length > 0 ? upDated : [""]
-    }
+      const upDated = pre.imagesUrl.filter((_,i)=> i !== idx)
+      return{
+        ...pre,
+        imagesUrl: upDated.length > 0 ? upDated : [""]
+      }
     })
   }
 
@@ -103,13 +102,11 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
   // 監聽 tags
   function handleTagsCheck(e){
     e.preventDefault()
-    if(product.tags.some((tag) => tag === currentTag.trim())){
+    if (product.tags.some((tag) => tag === currentTag.trim())){
       showDangerToast('標籤重複')
-      
-    }else if(!currentTag.trim()){
+    } else if (!currentTag.trim()){
       showDangerToast('標籤不能為空')
-    }
-    else{
+    } else {
       setProduct((pre)=>{
         const upDated = [...pre.tags]
         upDated.push(currentTag.trim())
@@ -118,7 +115,6 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
       setCurrentTag("")
     }
   }
-  
 
   // 移除 tag
   function handleRemove(i){
@@ -132,7 +128,6 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
     })
   }
 
-
   // 上傳圖片
   async function handleFileChange(e){
     const file = e.target.files[0]
@@ -142,16 +137,13 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
     formData.append('file-to-upload', file)
     try {
       const res =  await axios.post(`${api}/v2/api/${path}/admin/upload`,formData)
-      // console.log(res)
       const uploadImgUrl = res.data.imageUrl
       setProduct({
         ...product,
         imageUrl: uploadImgUrl
       })
     } catch (error) {
-      // console.log(error)
       showDangerToast(error.response.data.message[0])
-      
     }
   }
 
@@ -181,7 +173,6 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
                           onChange={handleFileChange}
                         />
                       </div>
-
                       {
                         product.imageUrl
                         ?
@@ -191,72 +182,67 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
                         :
                         ''
                       }
-
                       <div className="col-12 mb-3">
-                          <label htmlFor="imageUrl" className='form-label'>主圖</label>
-                          <input type="text" id="imageUrl" className='form-control form-control-sm' name='imageUrl' onChange={handleProductChange} value={product.imageUrl || ''} />
+                        <label htmlFor="imageUrl" className='form-label'>主圖</label>
+                        <input type="text" id="imageUrl" className='form-control form-control-sm' name='imageUrl' onChange={handleProductChange} value={product.imageUrl || ''} />
                       </div>
-                      
 
                       {Array.isArray(product.imagesUrl) &&  product.imagesUrl.map((img,index)=>(
                         <div key={index} >
                           <div className="col-12 mb-3 card p-3" >
                             <label htmlFor={`imagesUrl${index}`} className='form-label'>副圖{index + 1}</label>
                             <input type="text" id={`imagesUrl${index}`} className='form-control form-control-sm' name={`imagesUrl${index}`} value={img} onChange={(e)=>handleImagesUrlChange(index,e.target.value)}/>
-                          <div className='d-flex justify-content-end mt-2'>
-                            <button type='button' className='btn btn btn-outline-primary me-2' onClick={addImagesUrl}>新增</button>
-                            <button type='button' className='btn btn-outline-danger' onClick={()=>removeImagesUrl(index)}>刪除</button>
+                            <div className='d-flex justify-content-end mt-2'>
+                              <button type='button' className='btn btn btn-outline-primary me-2' onClick={addImagesUrl}>新增</button>
+                              <button type='button' className='btn btn-outline-danger' onClick={()=>removeImagesUrl(index)}>刪除</button>
+                            </div>
                           </div>
                         </div>
-                        </div>
                       ))}
-                    
                     </div>
                   </div>
 
                   <div className="col-7">
                     <div className="row">
+                      <div className="col-12 mb-3">
+                        <label htmlFor="title" className='form-label'>標題</label>
+                        <input type="text" id="title" className='form-control form-control-sm' name='title' onChange={handleProductChange} value={product.title || ''} />
+                      </div>
 
                       <div className="col-12 mb-3">
-                          <label htmlFor="title" className='form-label'>標題</label>
-                          <input type="text" id="title" className='form-control form-control-sm' name='title' onChange={handleProductChange} value={product.title || ''} />
-                      </div>
-
-                      <div className="col-12 mb-3">
-                          <label htmlFor="category" className='form-label'>分類</label>
-                          <input type="text" id="category" className='form-control form-control-sm' name='category'onChange={handleProductChange} value={product.category || ''} />
+                        <label htmlFor="category" className='form-label'>分類</label>
+                        <input type="text" id="category" className='form-control form-control-sm' name='category'onChange={handleProductChange} value={product.category || ''} />
                       </div>
 
                       <div className="col-6 mb-3">
-                          <label htmlFor="unit" className='form-label'>單位</label>
-                          <input type="text" id="unit" className='form-control form-control-sm' name='unit'onChange={handleProductChange} value={product.unit || ''} />
+                        <label htmlFor="unit" className='form-label'>單位</label>
+                        <input type="text" id="unit" className='form-control form-control-sm' name='unit'onChange={handleProductChange} value={product.unit || ''} />
                       </div>
 
                       <div className="col-6 mb-3">
-                          <label htmlFor="stockQty" className='form-label'>數量</label>
-                          <input type="number" min="0" id="stockQty" className='form-control form-control-sm' name='stockQty'onChange={handleProductChange} value={product.stockQty || ''} />
-                      </div>
-
-
-                      <div className="col-6 mb-3">
-                          <label htmlFor="origin_price" className='form-label'>原價</label>
-                          <input type="number" id="origin_price" className='form-control form-control-sm' name='origin_price'onChange={handleProductChange} value={product.origin_price || ""} min="0" />
+                        <label htmlFor="stockQty" className='form-label'>數量</label>
+                        <input type="number" min="0" id="stockQty" className='form-control form-control-sm' name='stockQty'onChange={handleProductChange} value={product.stockQty || ''} />
                       </div>
 
                       <div className="col-6 mb-3">
-                          <label htmlFor="price" className='form-label'>售價</label>
-                          <input type="number" id="price" className='form-control form-control-sm' name='price'onChange={handleProductChange} value={product.price || ''} min="0"/>
+                        <label htmlFor="origin_price" className='form-label'>原價</label>
+                        <input type="number" id="origin_price" className='form-control form-control-sm' name='origin_price'onChange={handleProductChange} value={product.origin_price || ""} min="0" />
+                      </div>
+
+                      <div className="col-6 mb-3">
+                        <label htmlFor="price" className='form-label'>售價</label>
+                        <input type="number" id="price" className='form-control form-control-sm' name='price'onChange={handleProductChange} value={product.price || ''} min="0"/>
                       </div>
 
 
                       <div className="col-12 mb-3">
-                          <label htmlFor="description" className='form-label'>產品描述</label>
-                          <textarea type="text" id="description" className='form-control form-control-sm' name='description' onChange={handleProductChange} value={product.description || ""}  />
+                        <label htmlFor="description" className='form-label'>產品描述</label>
+                        <textarea type="text" id="description" className='form-control form-control-sm' name='description' onChange={handleProductChange} value={product.description || ""}  />
                       </div>
                       
                       <div className="col-12 mb-3">
-                          <label htmlFor="content" className='form-label'>產品說明</label>
-                          <textarea type="text" id="content" className='form-control form-control-sm' name='content'onChange={handleProductChange} value={product.content || ''} />
+                        <label htmlFor="content" className='form-label'>產品說明</label>
+                        <textarea type="text" id="content" className='form-control form-control-sm' name='content'onChange={handleProductChange} value={product.content || ''} />
                       </div>
 
 
@@ -270,7 +256,7 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
                                 className="btn-close ms-2 btn-sm p-0"
                                 onClick={()=>{handleRemove(i)}}
                               >X</button>
-                            </span>)
+                              </span>)
                           })
                         }
                           <div className="d-flex just">
@@ -296,8 +282,8 @@ const ProductModal= ({ addModalRef, addModal, product, setProduct, isEdit, setIs
                             onChange={handleProductChange}
                           />
                           <label 
-                          className="form-check-label" 
-                          htmlFor="is_enabled" >是否啟用
+                            className="form-check-label" 
+                            htmlFor="is_enabled" >是否啟用
                           </label>
                         </div>
                       </div>

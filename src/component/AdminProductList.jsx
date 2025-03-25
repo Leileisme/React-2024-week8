@@ -14,11 +14,11 @@ const ProductList = ({ products, openEditModal, handleDelete, isSubmittingDelete
     setIsModalOpen(true)
   }
 
-    // 關閉刪除確認 modal
-    const closeModal = () => {
-      setModalOpenProduct({}) 
-      setIsModalOpen(false) // 關閉所有的 Modal
-    }
+  // 關閉刪除確認 modal
+  const closeModal = () => {
+    setModalOpenProduct({}) 
+    setIsModalOpen(false) // 關閉所有的 Modal
+  }
 
   return(
     <>
@@ -50,19 +50,16 @@ const ProductList = ({ products, openEditModal, handleDelete, isSubmittingDelete
                     ''
                   }
                 </td>
-                
-                
                 <td>{item.origin_price}</td>
                 <td>{item.price}</td>
-
                 <td>
-                {
-                  item.is_enabled ? (
-                    <span className='text-success' >啟用</span>
-                  ) : (
-                    <span>未啟用</span>
-                  )
-                }
+                  {
+                    item.is_enabled ? (
+                      <span className='text-success' >啟用</span>
+                    ) : (
+                      <span>未啟用</span>
+                    )
+                  }
                 </td>
                 <td>
                   <button type='button' className='btn btn-outline-primary me-2' onClick={()=>{openEditModal(item)}}>編輯</button>
@@ -71,53 +68,47 @@ const ProductList = ({ products, openEditModal, handleDelete, isSubmittingDelete
                   onClick={() => openModal(item)}>刪除</button>
                 </td>
                 <td>
-                {modalOpenProduct.id === item.id && (
-                  <>
-                    <div className={`modal-backdrop fade ${isModalOpen ? 'show' : ''}`}></div>
-                    <div
-                      className={`modal fade ${isModalOpen ? 'show' : ''} `}
-                      tabIndex="-1"
-                      role="dialog"
-                      aria-hidden={!isModalOpen}
-                      onClick={closeModal}
-                      style={{ display: isModalOpen ? 'block' : 'none' }}
-                    >
-                      <div className="modal-dialog" role="document">
-                        <div className="modal-content">
-                          <div className="modal-header">
-                            <h5 className="modal-title">確定刪除 <span className='text-danger'> {modalOpenProduct.title}</span> ?</h5>
-                          </div>
-                          <div className="modal-body">
-                            <p>這個操作將無法撤銷，確定刪除這個產品嗎？</p>
-                          </div>
-                          <div className="modal-footer">
-                            <button
-                              type="button"
-                              className="btn btn-secondary"
-                              onClick={closeModal}
-                            >
-                              取消
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-danger"
-                              onClick={(e) => {
-                                handleDelete(item.id, e)
-                                closeModal()  // 刪除後關閉 Modal
-                              }}
-                              disabled={isSubmittingDelete}
-                            >
-                              {isSubmittingDelete ? '刪除中...' : '確認刪除'}
-                            </button>
+                  {modalOpenProduct.id === item.id && (
+                    <>
+                      <div className={`modal-backdrop fade ${isModalOpen ? 'show' : ''}`}></div>
+                      <div
+                        className={`modal fade ${isModalOpen ? 'show' : ''} `}
+                        tabIndex="-1"
+                        role="dialog"
+                        aria-hidden={!isModalOpen}
+                        onClick={closeModal}
+                        style={{ display: isModalOpen ? 'block' : 'none' }}
+                      >
+                        <div className="modal-dialog" role="document">
+                          <div className="modal-content">
+                            <div className="modal-header">
+                              <h5 className="modal-title">確定刪除 <span className='text-danger'> {modalOpenProduct.title}</span> ?</h5>
+                            </div>
+                            <div className="modal-body">
+                              <p>這個操作將無法撤銷，確定刪除這個產品嗎？</p>
+                            </div>
+                            <div className="modal-footer">
+                              <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={closeModal}>取消</button>
+                              <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={(e) => {
+                                  handleDelete(item.id, e)
+                                  closeModal()  // 刪除後關閉 Modal
+                                }}
+                                disabled={isSubmittingDelete}
+                              >{isSubmittingDelete ? '刪除中...' : '確認刪除'}</button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </>
-                )}
+                    </>
+                  )}
                 </td>
               </tr>
-
             ))
           }
         </tbody>

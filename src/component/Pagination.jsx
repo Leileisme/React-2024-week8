@@ -16,8 +16,7 @@ const Pagination=({pagination,getProducts,getOrders,getCoupon,handlePageClick,ty
             } else if ( type === 'handlePageClick' ){
               handlePageClick(e,pagination.current_page - 1)
             }
-          }}
-          >上一頁</a>
+          }}>上一頁</a>
       </li>
       {
         [...new Array(pagination.total_pages)].map((_,index)=>(
@@ -44,7 +43,7 @@ const Pagination=({pagination,getProducts,getOrders,getCoupon,handlePageClick,ty
           className={`page-link ${pagination.has_next ? '' : 'disabled'}`} 
           href='#'
           onClick={(e)=>{
-            if( type === 'getOrders' ){
+            if ( type === 'getOrders' ){
               getOrders(e,pagination.current_page + 1)
             } else if( type === 'getProducts' ){
               getProducts(e,pagination.current_page + 1)

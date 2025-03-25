@@ -68,25 +68,24 @@ const HomePage = () => {
     dispatch(setCartQty(1))
   }
 
-    // 加入購物車
-    async function addCartItem(product_id,qty) {
-      dispatch(setIsLoading(true))
-      try {
-        await axios.post(`${api}/v2/api/${path}/cart`, {
-          data:{
-            product_id,
-            qty
-          }
-        })
-        getCart()
-        showSuccessToast('成功加入購物車')
-      } catch (error) {
-        showErrorToast(error?.response?.data?.message)
-      } finally {
-      dispatch(setIsLoading(false))
-  
-      }
+  // 加入購物車
+  async function addCartItem(product_id,qty) {
+    dispatch(setIsLoading(true))
+    try {
+      await axios.post(`${api}/v2/api/${path}/cart`, {
+        data:{
+          product_id,
+          qty
+        }
+      })
+      getCart()
+      showSuccessToast('成功加入購物車')
+    } catch (error) {
+      showErrorToast(error?.response?.data?.message)
+    } finally {
+    dispatch(setIsLoading(false))
     }
+  }
 
   // 取得購物車列表
   async function getCart() {
@@ -131,28 +130,19 @@ const HomePage = () => {
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
       dispatch(setIsLoading(false))
-
     }
   }
-
-    
-
 
   useEffect(()=>{
     getProductsList()
   },[getProductsList])
 
   return(<>
-
     <section className="home-carousel">
       <img src="https://images.unsplash.com/photo-1577400983943-874919eca6ce?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="-" alt="眼鏡店首頁" />
       <div className="home-carousel-text">
-        <p className="">
-        來 有 型
-        </p>
-        <p className="ms-4">
-        讓 您 有 型
-        </p>
+        <p className="">來 有 型</p>
+        <p className="ms-4">讓 您 有 型</p>
       </div>
     </section>
 
@@ -168,35 +158,31 @@ const HomePage = () => {
                 className="card product-card" 
                 onClick={
                   ()=>handleClickProduct(product.id)
-                }>
-              <img src={product.imageUrl}  className="card-img-top product-card-img-home position-relative"  alt="商品主圖" />
-              <div className="card-body product-car-body d-flex flex-column justify-content-between">
-                <div>
-                  <h5 className="card-title product-card-title h6">{product.title}</h5>
-                </div>
-
-                <div className="align-items-bottom">
-                  <p className="card-text mb-2">
-                    <span className="h4 text-danger">$ {product.price}</span>
-                    <span className="text-secondary">／</span>
-                    <del className="text-secondary">$ {product.origin_price}</del>
-                  </p>
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-primary w-100"
-                    onClick={(e)=>{
-                      e.stopPropagation()
-                      handleAddCartItem(product.id,false) }
-                    }>
-                    加入購物車
-                  </button>
+              }>
+                <img src={product.imageUrl}  className="card-img-top product-card-img-home position-relative"  alt="商品主圖" />
+                <div className="card-body product-car-body d-flex flex-column justify-content-between">
+                  <div>
+                    <h5 className="card-title product-card-title h6">{product.title}</h5>
+                  </div>
+                  <div className="align-items-bottom">
+                    <p className="card-text mb-2">
+                      <span className="h4 text-danger">$ {product.price}</span>
+                      <span className="text-secondary">／</span>
+                      <del className="text-secondary">$ {product.origin_price}</del>
+                    </p>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-primary w-100"
+                      onClick={(e)=>{
+                        e.stopPropagation()
+                        handleAddCartItem(product.id,false) }
+                      }>加入購物車</button>
+                  </div>
                 </div>
               </div>
-              </div>
-              </div>
+            </div>
           ))
         }
-        
       </div>
     </section>
 
@@ -207,12 +193,11 @@ const HomePage = () => {
       </div>
 
       <div className="home-store-text-box">
-
         <div className="home-store-text-box-border d-flex justify-content-center align-items-center">
           <p>
-          我們顛覆了客人對「笨拙感眼鏡」的擔憂。<br/>
-          每位客人都有最適合的眼鏡。<br/>
-          我們會用盡全力，讓您成為您最愛的樣子。
+            我們顛覆了客人對「笨拙感眼鏡」的擔憂。<br/>
+            每位客人都有最適合的眼鏡。<br/>
+            我們會用盡全力，讓您成為您最愛的樣子。
           </p>
         </div>
       </div>
@@ -225,33 +210,33 @@ const HomePage = () => {
         </div>
 
         <div className="col-12 col-lg-2 col-md-4 mb-5 d-flex justify-content-center align-items-center flex-column">
-            <i className="bi bi-eye home-icon "></i>
-            <div>最合適的度數</div>
+          <i className="bi bi-eye home-icon "></i>
+          <div>最合適的度數</div>
         </div>
 
         <div className="col-12 col-lg-2 col-md-4 mb-5 d-flex justify-content-center align-items-center flex-column">
-            <i className="bi bi-battery-full home-icon "></i>
-            <div>最熱忱的服務</div>
+          <i className="bi bi-battery-full home-icon "></i>
+          <div>最熱忱的服務</div>
         </div>
 
         <div className="col-12 col-lg-2 col-md-4 mb-5 d-flex justify-content-center align-items-center flex-column">
-            <i className="bi bi-binoculars home-icon "></i>
-            <div>所有鏡框「台灣設計」</div>
+          <i className="bi bi-binoculars home-icon "></i>
+          <div>所有鏡框「台灣設計」</div>
         </div>
 
         <div className="col-12 col-lg-2 col-md-4 mb-5 d-flex justify-content-center align-items-center flex-column">
-            <i className="bi bi-emoji-smile home-icon "></i>
-            <div>安心售後服務</div>
+          <i className="bi bi-emoji-smile home-icon "></i>
+          <div>安心售後服務</div>
         </div>
 
         <div className="col-12 col-lg-2 col-md-4 mb-5 d-flex justify-content-center align-items-center flex-column">
-            <i className="bi bi-eyeglasses home-icon "></i>
-            <div>堅守台灣品質</div>
+          <i className="bi bi-eyeglasses home-icon "></i>
+          <div>堅守台灣品質</div>
         </div>
 
         <div className="col-12 col-lg-2 col-md-4 mb-5 d-flex justify-content-center align-items-center flex-column">
-            <i className="bi bi-hand-thumbs-up home-icon "></i>
-            <div>只為您推薦，決不推銷</div>
+          <i className="bi bi-hand-thumbs-up home-icon "></i>
+          <div>只為您推薦，決不推銷</div>
         </div>
       </div>
     </section>
@@ -274,7 +259,6 @@ const HomePage = () => {
         </div>
       </div>
     </section>
-
   </>)
 }
 

@@ -30,14 +30,12 @@ const Login = () => {
       document.cookie = `token=${token}; expires=${new Date(expired).toUTCString()}; path=/`
 
       // axios.defaults.headers.common.Authorization = token
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`
       dispatch(setIsLogin(true))
       showSuccessToast('登入成功')
       navigate('/admin')
     } catch (error) {
-      // console.log(error)
       showErrorToast(error?.response?.data?.message)
-      
     }
   }
 

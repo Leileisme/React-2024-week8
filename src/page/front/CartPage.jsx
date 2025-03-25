@@ -28,12 +28,12 @@ const CartPage = () =>{
         product_id,
         qty
       }})
-      
+
       // getCart()
       getCartRef.current() 
     } catch (error) {
       showErrorToast(error?.response?.data?.message)
-    }finally{
+    } finally {
       dispatch(setIsLoading(false))
     }
   },[dispatch])
@@ -96,43 +96,41 @@ const CartPage = () =>{
       const updatedCartItems = cartItemsQty.map((item) =>
         item.id === cart.product_id ? { ...item, qty: val } : item
       )
-    
       dispatch(setCartItemsQty(updatedCartItems))
     }else{
       dispatch(setCartQty(val))
     }
   }
 
-    // 增加商品數量 btn 
-    function handleAddCartQty(cart,formCart,productDetail){
-      if(formCart){
-        const _itemQty =  cartItemsQty.filter((item)=> item.id === cart.product_id)
-        if((_itemQty[0].qty + 1) > cart.product.stockQty ){
-          showDangerToast(`庫存只剩${cart.product.stockQty}喔！`)
-        }else{
-          editCartItem(cart.id, cart.product_id ,_itemQty[0].qty+1)
-        }
-      }else{
-        dispatch(
-          setCartQty(Number(cartQty < productDetail.stockQty ? cartQty + 1 : productDetail.stockQty))
-        )
-        if((cartQty+1) > productDetail.stockQty ){
-          showDangerToast(`庫存只剩${productDetail.stockQty}喔！`)
-        }
+  // 增加商品數量 btn 
+  function handleAddCartQty(cart,formCart,productDetail){
+    if(formCart){
+      const _itemQty =  cartItemsQty.filter((item)=> item.id === cart.product_id)
+      if((_itemQty[0].qty + 1) > cart.product.stockQty ){
+        showDangerToast(`庫存只剩${cart.product.stockQty}喔！`)
+      } else {
+        editCartItem(cart.id, cart.product_id ,_itemQty[0].qty+1)
+      }
+    } else {
+      dispatch(
+        setCartQty(Number(cartQty < productDetail.stockQty ? cartQty + 1 : productDetail.stockQty))
+      )
+      if((cartQty+1) > productDetail.stockQty ){
+        showDangerToast(`庫存只剩${productDetail.stockQty}喔！`)
       }
     }
+  }
 
-   // 減少商品數量 btn 
+  // 減少商品數量 btn 
   function handleReduceCartQty(cart,formCart){
     if(formCart){
       const _itemQty =  cartItemsQty.filter((item)=> item.id === cart.product_id)
       if((_itemQty[0].qty - 1) <= 0){
         showDangerToast('最低數量是1喔！')
-      }else{
+      } else {
         editCartItem(cart.id, cart.product_id ,_itemQty[0].qty-1)
       }
-
-    }else{
+    } else {
       dispatch(
         setCartQty(Number(cartQty > 2 ? cartQty - 1 : 1))
       )
@@ -143,7 +141,6 @@ const CartPage = () =>{
   }
 
   // 監聽 產品詳情中數量
-  
   function handleCartQtyInputOnBlur(e,cart,formCart,productDetail) {
     const val = Number(e.target.value)
     if(isNaN(val) || val <1 ){
@@ -151,15 +148,12 @@ const CartPage = () =>{
       formCart ? getCart() : dispatch(setCartQty(1))
       return
     }
-
     const maxQty = formCart ? cart.product.stockQty : productDetail.stockQty
-
     if(val > maxQty){
       showDangerToast(`庫存只剩${maxQty}`)
       formCart ? getCart() : dispatch(setCartQty(productDetail.stockQty))
       return
     }
-
     if (formCart){
       editCartItem(cart.id,cart.product_id,val)
     } else {
@@ -282,28 +276,29 @@ const CartPage = () =>{
                       </tr>
                     </thead>
                     <tbody>
-                      {cart.carts?.map((item) => (
-                        <tr key={item.product.id}>
-                          <td className="align-content-center">
-                            {item.product.title}
-                          </td>
-                          <td className="align-content-center" >
-                            <div className="d-flex">
-                              <span className="text-secondary">$ {item.product.price}</span>
-                            </div>
-                          </td>
-                          <td className="align-content-center">
-                            <span className="me-2 d-flex align-items-center ">
-                              {getCartItemsQty(item)}
-                              <span className="ms-1">{item.product.unit}</span>
-                            </span>
-                          </td>
-                          <td className="align-content-center">
-                            <div className="d-flex justify-content-end">
-                              <span className="text-danger">$ {item.total}</span>
-                            </div>
-                          </td>
-                        </tr>
+                      {
+                        cart.carts?.map((item) => (
+                          <tr key={item.product.id}>
+                            <td className="align-content-center">
+                              {item.product.title}
+                            </td>
+                            <td className="align-content-center" >
+                              <div className="d-flex">
+                                <span className="text-secondary">$ {item.product.price}</span>
+                              </div>
+                            </td>
+                            <td className="align-content-center">
+                              <span className="me-2 d-flex align-items-center ">
+                                {getCartItemsQty(item)}
+                                <span className="ms-1">{item.product.unit}</span>
+                              </span>
+                            </td>
+                            <td className="align-content-center">
+                              <div className="d-flex justify-content-end">
+                                <span className="text-danger">$ {item.total}</span>
+                              </div>
+                            </td>
+                          </tr>
                       ))}
                       <tr>
                         <td></td>
@@ -318,15 +313,15 @@ const CartPage = () =>{
                       {
                         cart.final_total !== cart.total &&
                         <tr>
-                        <td></td>
-                        <td></td>
-                        <td className="align-content-center text-bg-danger">折扣後</td>
-                        <td className="align-content-center text-bg-danger">
-                          <div className="d-flex justify-content-end fw-bold">
-                            $ {cart.final_total}
-                          </div>
-                        </td>
-                      </tr>
+                          <td></td>
+                          <td></td>
+                          <td className="align-content-center text-bg-danger">折扣後</td>
+                          <td className="align-content-center text-bg-danger">
+                            <div className="d-flex justify-content-end fw-bold">
+                              $ {cart.final_total}
+                            </div>
+                          </td>
+                        </tr>
                       }
                     </tbody>
                   </table>
@@ -343,9 +338,8 @@ const CartPage = () =>{
                         onChange={handleCoupOnChange}
                       />
                       <label htmlFor="coupon">使用折扣碼</label>
-
                     </div>
-                      <button type="button" className="btn btn-primary" onClick={useCoupon}> 確定</button>
+                    <button type="button" className="btn btn-primary" onClick={useCoupon}> 確定</button>
                   </div>
 
                   <h5 className="card-title mb-2">訂購資訊</h5>
@@ -361,8 +355,7 @@ const CartPage = () =>{
                               placeholder="name"
                               {...register('name', {
                                 required: '欄位必填',
-                              })}
-                            />
+                              })}/>
                             <span className="invalid-feedback">
                               {errors.name ? errors.name.message : ''}
                             </span>
@@ -383,8 +376,7 @@ const CartPage = () =>{
                                   value: /^[0-9]{10}$/,
                                   message: '請輸入有效的手機',
                                 },
-                              })}
-                            />
+                              })}/>
                             <span className="invalid-feedback">
                               {errors.tel ? errors.tel.message : ''}
                             </span>
@@ -405,8 +397,7 @@ const CartPage = () =>{
                                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                                   message: '請輸入有效的 email 格式',
                                 },
-                              })}
-                            />
+                              })}/>
                             <span className="invalid-feedback">
                               {errors.email ? errors.email.message : ''}
                             </span>
@@ -423,8 +414,7 @@ const CartPage = () =>{
                               placeholder="address"
                               {...register('address', {
                                 required: '欄位必填',
-                              })}
-                            />
+                              })}/>
                             <span className="invalid-feedback">
                               {errors.address ? errors.address.message : ''}
                             </span>
@@ -445,8 +435,7 @@ const CartPage = () =>{
                                   value: 100,
                                   message: '字數不能超過100字',
                                 },
-                              })}
-                            />
+                              })}/>
                             <span className="invalid-feedback">
                               {errors.message ? errors.message.message : ''}
                             </span>
@@ -461,17 +450,11 @@ const CartPage = () =>{
                             type="submit"
                             className={`btn btn-sm btn-primary w-100 mb-2 mt-2 ${
                               cart?.carts?.length === 0 ? 'disabled' : ''
-                            }`}
-                          >
-                            送出訂單
-                          </button>
+                            }`}>送出訂單</button>
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-secondary w-100"
-                            onClick={() => setToPay(false)}
-                          >
-                            返回商品編緝
-                          </button>
+                            onClick={() => setToPay(false)}>返回商品編緝</button>
                         </div>
                       </div>
                     </form>
@@ -480,7 +463,6 @@ const CartPage = () =>{
               </div>
             </div>
           ) : (
-            <>
             <div className="">
               <table className="table">
                 <thead>
@@ -496,69 +478,60 @@ const CartPage = () =>{
                   </tr>
                 </thead>
                 <tbody>
-                  {cart.carts?.map((item) => (
-                    <tr key={item.product.id}>
-                      
-                      <td className="align-content-center ">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => deleteCartItem(item.id)}
-                        >
-                          X
-                        </button>
-                      </td>
-                      <td className="align-content-center">
-                        {item.product.title}
-                      </td>
-                      <td className="align-content-center">
-                        <span className="me-2 d-flex align-items-center ">
+                  {
+                    cart.carts?.map((item) => (
+                      <tr key={item.product.id}>
+                        
+                        <td className="align-content-center ">
                           <button
                             type="button"
-                            className={`btn btn-sm btn-outline-primary`}
-                            onClick={() => handleReduceCartQty(item, formCart)}
-                          >
-                            -
-                          </button>
-                          <input
-                            type="text"
-                            className="form-control cart-number-input text-center "
-                            value={getCartItemsQty(item)}
-                            onChange={(e) => handleCartQtyInputOnChange(e, item, formCart)}
-                            onBlur={(e) => {
-                              handleCartQtyInputOnBlur(e, item, true, null);
-                            }}
-                          />
-                          <button
-                            type="button"
-                            className={`btn btn-sm btn-outline-primary`}
-                            onClick={() => handleAddCartQty(item, formCart)}
-                          >
-                            +
-                          </button>
-                          <span className="ms-1">{item.product.unit}</span>
-                        </span>
-                      </td>
-                      <td className="align-content-center">
-                        <div className="d-flex ">
-                          <span className="text-secondary" >
-                            $ {item.product.price}
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => deleteCartItem(item.id)}>X</button>
+                        </td>
+                        <td className="align-content-center">
+                          {item.product.title}
+                        </td>
+                        <td className="align-content-center">
+                          <span className="me-2 d-flex align-items-center ">
+                            <button
+                              type="button"
+                              className={`btn btn-sm btn-outline-primary`}
+                              onClick={() => handleReduceCartQty(item, formCart)}>-</button>
+                            <input
+                              type="text"
+                              className="form-control cart-number-input text-center "
+                              value={getCartItemsQty(item)}
+                              onChange={(e) => handleCartQtyInputOnChange(e, item, formCart)}
+                              onBlur={(e) => {
+                                handleCartQtyInputOnBlur(e, item, true, null)
+                              }}/>
+                            <button
+                              type="button"
+                              className={`btn btn-sm btn-outline-primary`}
+                              onClick={() => handleAddCartQty(item, formCart)}>+</button>
+                            <span className="ms-1">{item.product.unit}</span>
                           </span>
-                        </div>
-                      </td>
-                      <td className="align-content-center">
-                        <span className="d-flex text-secondary" >
-                          {item.product.stockQty}
-                        </span>
-                      </td>
-                      <td className="align-content-center">
-                        <div className="d-flex justify-content-end">
-                          <span className="text-danger text-end">
-                            $ {item.total}
+                        </td>
+                        <td className="align-content-center">
+                          <div className="d-flex ">
+                            <span className="text-secondary" >
+                              $ {item.product.price}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="align-content-center">
+                          <span className="d-flex text-secondary" >
+                            {item.product.stockQty}
                           </span>
-                        </div>
-                      </td>
-                    </tr>
+                        </td>
+                        <td className="align-content-center">
+                          <div className="d-flex justify-content-end">
+                            <span className="text-danger text-end">
+                              $ {item.total}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
                   ))}
                   <tr>
                     <td></td>
@@ -572,34 +545,22 @@ const CartPage = () =>{
                       </div>
                     </td>
                   </tr>
-                  
                 </tbody>
-
-                
               </table>
 
               <button
                 type="button"
                 className={`btn btn-sm btn-primary w-100 mb-2 mt-5 ${cart?.carts?.length === 0 ? 'disabled' : ''}`}
-                onClick={() => setToPay(true)}
-              >
-                去買單
-              </button>
+                onClick={() => setToPay(true)}>去買單</button>
               <button
                 type="button"
                 className={`btn btn-sm btn-danger w-100 ${cart?.carts?.length === 0 ? 'disabled' : ''}`}
-                onClick={handleDeleteCartAll}
-              >
-                清空購物車
-              </button>
+                onClick={handleDeleteCartAll}>清空購物車</button>
             </div>
-            </>
           )}
         </div>
       </div>
     </div>
-    
-
   </>)
 }
 
